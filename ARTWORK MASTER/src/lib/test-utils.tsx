@@ -20,6 +20,12 @@ export const createMockFile = (name: string, type: string, size: number = 1024):
     value: size,
     writable: false,
   })
+  
+  // Add arrayBuffer method for testing
+  file.arrayBuffer = async () => {
+    return new ArrayBuffer(size)
+  }
+  
   return file
 }
 
