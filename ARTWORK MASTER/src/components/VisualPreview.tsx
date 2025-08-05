@@ -12,76 +12,61 @@ interface VisualPreviewProps {
 export default function VisualPreview({ file, fileUrl, width = 320, height = 240 }: VisualPreviewProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isPdf, setIsPdf] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     if (!file) return
     setError(null)
     setPreviewUrl(null)
+    setIsPdf(false)
 
-    const ext = file.name.split('.').pop()?.toLowerCase()
-    if (!ext) {
-      setError('Unknown file type')
-      return
-    }
-
-    if (['jpg', 'jpeg', 'png', 'gif', 'tiff', 'tif', 'bmp', 'webp'].includes(ext)) {
-      // Image preview
+    // Improved file format detection
+    const fileName = file.name.toLowerCase()
+    const mimeType = file.type.toLowerCase()
+    
+    // Check for image formats
+    if (['jpg', 'jpeg', 'png', 'gif', 'tiff', 'tif', 'bmp', 'webp'].some(ext => fileName.endsWith(`.${ext}`)) ||
+        mimeType.startsWith('image/')) {
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
       return () => URL.revokeObjectURL(url)
-    } else if (ext === 'pdf') {
-      // PDF preview (first page)
-      import('pdfjs-dist/build/pdf').then(pdfjsLib => {
-        import('pdfjs-dist/build/pdf.worker.entry').then(() => {
-          const reader = new FileReader()
-          reader.onload = async (e) => {
-            try {
-              const typedarray = new Uint8Array(e.target?.result as ArrayBuffer)
-              pdfjsLib.GlobalWorkerOptions.workerSrc = window.location.origin + '/pdf.worker.js'
-              const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise
-              const page = await pdf.getPage(1)
-              const viewport = page.getViewport({ scale: 1 })
-              const canvas = canvasRef.current
-              if (!canvas) return
-              const context = canvas.getContext('2d')
-              canvas.width = width
-              canvas.height = height
-              const renderContext = {
-                canvasContext: context,
-                viewport: page.getViewport({ scale: Math.min(width / viewport.width, height / viewport.height) })
-              }
-              await page.render(renderContext).promise
-              setPreviewUrl('pdf-canvas')
-            } catch (err) {
-              setError('Could not render PDF preview')
-            }
-          }
-          reader.readAsArrayBuffer(file)
-        })
-      })
+    } 
+    // Check for PDF
+    else if (fileName.endsWith('.pdf') || mimeType === 'application/pdf') {
+      setIsPdf(true)
       return
-    } else {
+    }
+    // Check for other supported formats
+    else if (['ai', 'indd', 'psd'].some(ext => fileName.endsWith(`.${ext}`))) {
+      // Show appropriate icon for these formats
       setError('Preview not available for this file type')
+      return
+    }
+    else {
+      setError('File format not supported. Please upload: PDF, AI, INDD, PSD, or TIFF files')
     }
   }, [file, width, height])
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-6 text-beith-gray-500">
-        <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex flex-col items-center justify-center h-full p-6 bg-gray-50 rounded-lg border">
+        <svg className="w-12 h-12 mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
-        <span>{error}</span>
+        <span className="text-gray-800 font-medium">{error}</span>
       </div>
     )
   }
 
-  if (previewUrl === 'pdf-canvas') {
+  if (isPdf) {
     return (
-      <div className="flex flex-col items-center">
-        <canvas ref={canvasRef} width={width} height={height} className="border rounded shadow" />
-        <span className="text-xs text-beith-gray-500 mt-2">PDF Preview (first page)</span>
+      <div className="flex flex-col items-center justify-center h-full p-6 bg-gray-50 rounded-lg border">
+        <svg className="w-16 h-16 mb-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+        </svg>
+        <span className="text-lg font-medium text-gray-800">PDF Document</span>
+        <span className="text-sm text-gray-600 mt-1">{file.name}</span>
       </div>
     )
   }
@@ -96,7 +81,7 @@ export default function VisualPreview({ file, fileUrl, width = 320, height = 240
           height={height}
           className="object-contain border rounded shadow"
         />
-        <span className="text-xs text-beith-gray-500 mt-2">Image Preview</span>
+        <span className="text-xs text-gray-600 mt-2 font-medium">Image Preview</span>
       </div>
     )
   }
@@ -112,17 +97,17 @@ export default function VisualPreview({ file, fileUrl, width = 320, height = 240
           height={height}
           className="object-contain border rounded shadow"
         />
-        <span className="text-xs text-beith-gray-500 mt-2">Preview</span>
+        <span className="text-xs text-gray-600 mt-2 font-medium">Preview</span>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full p-6 text-beith-gray-400">
-      <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="flex flex-col items-center justify-center h-full p-6 bg-gray-50 rounded-lg border">
+      <svg className="w-12 h-12 mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
       </svg>
-      <span>No preview available</span>
+      <span className="text-gray-800 font-medium">No preview available</span>
     </div>
   )
 }

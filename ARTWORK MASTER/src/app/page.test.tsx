@@ -22,7 +22,7 @@ describe('Home Page', () => {
   it('displays supported file formats', () => {
     render(<Home />)
     
-    expect(screen.getByText(/PDF, AI, INDD, PSD, or TIFF files/i)).toBeInTheDocument()
+    expect(screen.getByText(/PDF, AI, INDD, PSD, TIFF/i)).toBeInTheDocument()
   })
 
   it('renders feature highlights', () => {

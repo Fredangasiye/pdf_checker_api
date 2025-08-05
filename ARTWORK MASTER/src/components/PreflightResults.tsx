@@ -134,33 +134,33 @@ export default function PreflightResults({
 
       {/* File Metadata */}
       {metadata && (
-        <div className="bg-beith-gray-50 border border-beith-gray-200 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-beith-gray-900 mb-2">File Information</h3>
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <h3 className="font-semibold text-gray-900 mb-2">File Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             {metadata.dimensions && (
               <div>
-                <span className="font-medium text-beith-gray-700">Dimensions:</span>
-                <span className="ml-2 text-beith-gray-600">
+                <span className="font-medium text-gray-700">Dimensions:</span>
+                <span className="ml-2 text-gray-800">
                   {metadata.dimensions.height}mm x {metadata.dimensions.width}mm
                 </span>
               </div>
             )}
             {metadata.resolution && (
               <div>
-                <span className="font-medium text-beith-gray-700">Resolution:</span>
-                <span className="ml-2 text-beith-gray-600">{metadata.resolution} DPI</span>
+                <span className="font-medium text-gray-700">Resolution:</span>
+                <span className="ml-2 text-gray-800">{metadata.resolution} DPI</span>
               </div>
             )}
             {metadata.colorSpace && (
               <div>
-                <span className="font-medium text-beith-gray-700">Color Space:</span>
-                <span className="ml-2 text-beith-gray-600">{metadata.colorSpace}</span>
+                <span className="font-medium text-gray-700">Color Space:</span>
+                <span className="ml-2 text-gray-800">{metadata.colorSpace}</span>
               </div>
             )}
             {metadata.fonts && metadata.fonts.length > 0 && (
               <div>
-                <span className="font-medium text-beith-gray-700">Fonts:</span>
-                <span className="ml-2 text-beith-gray-600">{metadata.fonts.length} detected</span>
+                <span className="font-medium text-gray-700">Fonts:</span>
+                <span className="ml-2 text-gray-800">{metadata.fonts.length} detected</span>
               </div>
             )}
           </div>
@@ -202,23 +202,23 @@ export default function PreflightResults({
               </div>
             </div>
             
-            <p className={`mt-2 ${result.passed ? 'text-green-700' : 'text-red-700'}`}>
+            <p className={`mt-2 ${result.passed ? 'text-green-800' : 'text-red-800'}`}>
               {result.message}
             </p>
 
             {result.details && (
               <div className="mt-3 p-3 bg-white rounded border">
-                <h4 className="text-sm font-medium text-beith-gray-700 mb-2">Details</h4>
+                <h4 className="text-sm font-medium text-gray-800 mb-2">Details</h4>
                 {result.details.recommendation && (
                   <div className="mb-2">
-                    <span className="text-sm font-medium text-beith-gray-600">Recommendation:</span>
-                    <p className="text-sm text-beith-gray-700 mt-1">{result.details.recommendation}</p>
+                    <span className="text-sm font-medium text-gray-700">Recommendation:</span>
+                    <p className="text-sm text-gray-800 mt-1">{result.details.recommendation}</p>
                   </div>
                 )}
                 {result.details.examples && (
                   <div>
-                    <span className="text-sm font-medium text-beith-gray-600">Examples:</span>
-                    <ul className="text-sm text-beith-gray-700 mt-1 space-y-1">
+                    <span className="text-sm font-medium text-gray-700">Examples:</span>
+                    <ul className="text-sm text-gray-800 mt-1 space-y-1">
                       {Object.entries(result.details.examples).map(([key, value]) => (
                         <li key={key}>
                           <span className="font-medium">{key}:</span> {value as string}
@@ -229,8 +229,8 @@ export default function PreflightResults({
                 )}
                 {result.details.fonts && (
                   <div>
-                    <span className="text-sm font-medium text-beith-gray-600">Fonts:</span>
-                    <ul className="text-sm text-beith-gray-700 mt-1">
+                    <span className="text-sm font-medium text-gray-700">Fonts:</span>
+                    <ul className="text-sm text-gray-800 mt-1">
                       {result.details.fonts.map((font: string, index: number) => (
                         <li key={index}>• {font}</li>
                       ))}

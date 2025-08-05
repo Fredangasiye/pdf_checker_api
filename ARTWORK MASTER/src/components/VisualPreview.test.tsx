@@ -30,13 +30,13 @@ describe('VisualPreview', () => {
   it('renders fallback for unknown file type', () => {
     const file = createMockFile('test', '')
     render(<VisualPreview file={file} />)
-    expect(screen.getByText('Preview not available for this file type')).toBeInTheDocument()
+    expect(screen.getByText('File format not supported. Please upload: PDF, AI, INDD, PSD, or TIFF files')).toBeInTheDocument()
   })
 
   it('renders fallback for server-provided preview URL', () => {
     const file = createMockFile('test.unknown', 'application/octet-stream')
     render(<VisualPreview file={file} fileUrl="https://example.com/preview.png" />)
-    expect(screen.getByText('Preview not available for this file type')).toBeInTheDocument()
+    expect(screen.getByText('File format not supported. Please upload: PDF, AI, INDD, PSD, or TIFF files')).toBeInTheDocument()
   })
 
   // PDF preview is difficult to test in JSDOM, so we skip this test for now
