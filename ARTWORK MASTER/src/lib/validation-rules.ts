@@ -33,7 +33,7 @@ export const fileFormatRule: ValidationRule = {
   description: 'Check if file format is supported',
   severity: 'error',
   validate: (metadata: ArtworkMetadata) => {
-    const supportedFormats = ['PDF', 'Adobe Illustrator', 'Adobe InDesign', 'Adobe Photoshop', 'TIFF', 'Image']
+    const supportedFormats = ['PDF', 'Adobe Illustrator', 'Adobe InDesign', 'Adobe Photoshop', 'TIFF', 'TIF', 'Image']
     const fileType = metadata.fileType || 'Unknown'
     
     if (supportedFormats.includes(fileType)) {
@@ -47,7 +47,7 @@ export const fileFormatRule: ValidationRule = {
       passed: false,
       message: `File format "${fileType}" is not supported`,
       details: {
-        recommendation: 'Please upload files in PDF, AI, INDD, PSD, or TIFF format',
+        recommendation: 'Please upload files in PDF, AI, INDD, PSD, TIFF, or TIF format',
         supportedFormats: supportedFormats
       }
     }

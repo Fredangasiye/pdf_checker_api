@@ -21,7 +21,7 @@ export default function FileUploader({
   onFileSelect,
   onError,
   maxSize = 104857600, // 100MB default
-  acceptedTypes = ['pdf', 'ai', 'indd', 'psd', 'tiff'],
+  acceptedTypes = ['pdf', 'ai', 'indd', 'psd', 'tiff', 'tif'],
   disabled = false
 }: FileUploaderProps) {
   const [uploadState, setUploadState] = useState<UploadState>({

@@ -101,8 +101,8 @@ export default function PreflightResults({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-beith-gray-900">Preflight Results</h2>
-          <p className="text-beith-gray-600 mt-1">
+          <h2 className="text-2xl font-bold text-gray-900">Preflight Results</h2>
+          <p className="text-gray-700 mt-1">
             {fileName} ({(fileSize / 1024 / 1024).toFixed(1)}MB)
           </p>
         </div>
@@ -140,7 +140,7 @@ export default function PreflightResults({
             {metadata.dimensions && (
               <div>
                 <span className="font-medium text-gray-700">Dimensions:</span>
-                <span className="ml-2 text-gray-800">
+                <span className="ml-2 text-gray-900">
                   {metadata.dimensions.height}mm x {metadata.dimensions.width}mm
                 </span>
               </div>
@@ -148,19 +148,19 @@ export default function PreflightResults({
             {metadata.resolution && (
               <div>
                 <span className="font-medium text-gray-700">Resolution:</span>
-                <span className="ml-2 text-gray-800">{metadata.resolution} DPI</span>
+                <span className="ml-2 text-gray-900">{metadata.resolution} DPI</span>
               </div>
             )}
             {metadata.colorSpace && (
               <div>
                 <span className="font-medium text-gray-700">Color Space:</span>
-                <span className="ml-2 text-gray-800">{metadata.colorSpace}</span>
+                <span className="ml-2 text-gray-900">{metadata.colorSpace}</span>
               </div>
             )}
             {metadata.fonts && metadata.fonts.length > 0 && (
               <div>
                 <span className="font-medium text-gray-700">Fonts:</span>
-                <span className="ml-2 text-gray-800">{metadata.fonts.length} detected</span>
+                <span className="ml-2 text-gray-900">{metadata.fonts.length} detected</span>
               </div>
             )}
           </div>
@@ -169,7 +169,7 @@ export default function PreflightResults({
 
       {/* Validation Results */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-beith-gray-900">Validation Details</h3>
+        <h3 className="font-semibold text-gray-900">Validation Details</h3>
         {Object.entries(results).map(([ruleName, result]) => (
           <div
             key={ruleName}

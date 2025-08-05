@@ -117,7 +117,7 @@ export default function Home() {
             <FileUploader
               onFileSelect={handleFileSelect}
               onError={handleError}
-              disabled={uploadState.uploading}
+              acceptedTypes={['pdf', 'ai', 'indd', 'psd', 'tiff', 'tif']}
             />
 
             {uploadState.error && (

@@ -12,16 +12,10 @@ describe('FileUploader', () => {
   })
 
   it('renders upload interface correctly', () => {
-    render(
-      <FileUploader
-        onFileSelect={mockOnFileSelect}
-        onError={mockOnError}
-      />
-    )
-
+    render(<FileUploader onFileSelect={mockOnFileSelect} onError={mockOnError} />)
     expect(screen.getByText(/click to upload/i)).toBeInTheDocument()
     expect(screen.getByText(/drag and drop/i)).toBeInTheDocument()
-    expect(screen.getByText(/PDF, AI, INDD, PSD, TIFF files up to 100MB/i)).toBeInTheDocument()
+    expect(screen.getByText(/PDF, AI, INDD, PSD, TIFF, TIF files up to 100MB/i)).toBeInTheDocument()
   })
 
   it('handles valid file selection', async () => {
@@ -187,6 +181,6 @@ describe('FileUploader', () => {
       />
     )
 
-    expect(screen.getByText(/PDF, AI, INDD, PSD, TIFF files up to 50MB/i)).toBeInTheDocument()
+    expect(screen.getByText(/PDF, AI, INDD, PSD, TIFF, TIF files up to 50MB/i)).toBeInTheDocument()
   })
 }) 

@@ -143,12 +143,32 @@ export class FileProcessor {
       // Calculate actual resolution (DPI)
       const resolution = metadata.density ? (Array.isArray(metadata.density) ? metadata.density[0] : metadata.density) : 72
       
-      // Determine color space
+      // Determine color space more accurately
       let colorSpace = 'RGB'
       if (metadata.space === 'cmyk') {
         colorSpace = 'CMYK'
       } else if (metadata.space === 'srgb' || metadata.space === 'rgb') {
         colorSpace = 'RGB'
+      } else if (metadata.space === 'b-w') {
+        colorSpace = 'GRAYSCALE'
+      }
+      
+      // For TIFF files, try to get more accurate color space info
+      if (fileInfo.extension.toLowerCase() === 'tif' || fileInfo.extension.toLowerCase() === 'tiff') {
+        try {
+          // Use sharp's built-in TIFF processing
+          const tiffImage = sharp(filePath)
+          const tiffMetadata = await tiffImage.metadata()
+          
+          // Check for CMYK TIFF files
+          if (tiffMetadata.space === 'cmyk') {
+            colorSpace = 'CMYK'
+          } else if (tiffMetadata.space === 'b-w') {
+            colorSpace = 'GRAYSCALE'
+          }
+        } catch (error) {
+          console.warn('Could not extract detailed TIFF metadata:', error)
+        }
       }
       
       return {
@@ -159,7 +179,7 @@ export class FileProcessor {
         hasLiveArea: false,
         fonts: [],
         spotColors: [],
-        fileType: 'Image',
+        fileType: fileInfo.extension.toUpperCase() === 'TIF' ? 'TIF' : 'Image',
         textOutlined: true // Images have no text to outline
       }
     } catch (error) {
@@ -188,14 +208,20 @@ export class FileProcessor {
       // Check for text content to determine if text is outlined
       const textOutlined = await this.checkPDFTextOutlined(pdfDoc)
       
+      // Detect actual color profile from PDF content
+      const colorSpace = await this.detectPDFColorSpace(pdfDoc)
+      
+      // Detect spot colors from PDF content
+      const spotColors = await this.detectPDFSpotColors(pdfDoc)
+      
       return {
         dimensions: { width: widthMm, height: heightMm },
         resolution: 300, // PDFs are typically 300 DPI for print
-        colorSpace: 'CMYK', // Most print PDFs are CMYK
+        colorSpace,
         hasBleed: this.checkPDFBleed(pdfDoc),
         hasLiveArea: this.checkPDFLiveArea(pdfDoc),
         fonts: await this.extractPDFFonts(pdfDoc),
-        spotColors: [],
+        spotColors,
         fileType: 'PDF',
         textOutlined
       }
@@ -243,6 +269,66 @@ export class FileProcessor {
       return ['Helvetica', 'Times-Roman']
     } catch {
       return []
+    }
+  }
+
+  private async detectPDFColorSpace(pdfDoc: PDFDocument): Promise<string> {
+    try {
+      // Try to detect color space from PDF content
+      // This is a simplified approach - in a real implementation you'd parse the PDF's color space info
+      const pages = pdfDoc.getPages()
+      
+      // Check if PDF has color profiles or specific color space information
+      // For now, we'll use a heuristic based on file size and content
+      const pdfBytes = await fs.readFile(pdfDoc.toString())
+      
+      // Look for color space indicators in the PDF content
+      const pdfContent = pdfBytes.toString('utf8', 0, Math.min(pdfBytes.length, 10000))
+      
+      if (pdfContent.includes('/DeviceCMYK') || pdfContent.includes('/CMYK')) {
+        return 'CMYK'
+      } else if (pdfContent.includes('/DeviceRGB') || pdfContent.includes('/RGB')) {
+        return 'RGB'
+      } else if (pdfContent.includes('/DeviceGray') || pdfContent.includes('/Gray')) {
+        return 'GRAYSCALE'
+      }
+      
+      // Default to CMYK for print PDFs, but this could be improved
+      return 'CMYK'
+    } catch {
+      return 'CMYK' // Default fallback
+    }
+  }
+
+  private async detectPDFSpotColors(pdfDoc: PDFDocument): Promise<string[]> {
+    try {
+      // Try to detect spot colors from PDF content
+      // This is a simplified approach - in a real implementation you'd parse the PDF's color definitions
+      const pages = pdfDoc.getPages()
+      
+      // Check if PDF has spot color definitions
+      const pdfBytes = await fs.readFile(pdfDoc.toString())
+      const pdfContent = pdfBytes.toString('utf8', 0, Math.min(pdfBytes.length, 10000))
+      
+      const spotColors: string[] = []
+      
+      // Look for common spot color patterns
+      if (pdfContent.includes('Pantone') || pdfContent.includes('PANTONE')) {
+        // Extract Pantone color names
+        const pantoneMatches = pdfContent.match(/Pantone\s+(\w+\s+\w+)/gi)
+        if (pantoneMatches) {
+          spotColors.push(...pantoneMatches.map(match => match.trim()))
+        }
+      }
+      
+      // Look for other spot color indicators
+      if (pdfContent.includes('/Separation') || pdfContent.includes('/Spot')) {
+        spotColors.push('Custom Spot Color')
+      }
+      
+      return spotColors
+    } catch {
+      return [] // Default fallback
     }
   }
 
