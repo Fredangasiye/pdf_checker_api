@@ -349,4 +349,6 @@ export class FileProcessor {
     }
     return mimeTypes[extension.toLowerCase()] || 'application/octet-stream'
   }
-} 
+}
+
+export const fileProcessor = new FileProcessor() 

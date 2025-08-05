@@ -1,43 +1,31 @@
 # Task List: Beith Digital Preflight Portal
 
 ## Relevant Files
-
-- `package.json` - Project dependencies and scripts configuration
-- `README.md` - Project documentation and setup instructions
-- `src/app/layout.tsx` - Root layout component with global styles
-- `src/app/page.tsx` - Main landing page component
-- `src/components/FileUploader.tsx` - Drag-and-drop file upload component
-- `src/components/FileUploader.test.tsx` - Unit tests for FileUploader component
-- `src/components/PreflightResults.tsx` - Results dashboard component
-- `src/components/PreflightResults.test.tsx` - Unit tests for PreflightResults component
-- `src/components/VisualPreview.tsx` - Visual print preview component with overlay guides
-- `src/components/VisualPreview.test.tsx` - Unit tests for VisualPreview component
-- `src/lib/preflight-engine.ts` - Core preflight validation logic
-- `src/lib/preflight-engine.test.ts` - Unit tests for preflight engine
-- `src/lib/file-processor.ts` - File processing and format handling utilities
-- `src/lib/file-processor.test.ts` - Unit tests for file processor
-- `src/lib/validation-rules.ts` - Beith Digital's artwork validation rules
+- `src/lib/file-processor.ts` - Real file metadata extraction using sharp and pdf-lib
+- `src/lib/file-processor.test.ts` - Unit tests for file processing with real file analysis
+- `src/lib/validation-rules.ts` - Updated validation rules with text outlining detection
 - `src/lib/validation-rules.test.ts` - Unit tests for validation rules
-- `src/app/api/upload/route.ts` - API route for file upload handling
-- `src/app/api/upload/route.test.ts` - Unit tests for upload API route
-- `src/app/api/preflight/route.ts` - API route for preflight analysis
-- `src/app/api/preflight/route.test.ts` - Unit tests for preflight API route
-- `src/app/admin/page.tsx` - Admin dashboard page
-- `src/app/admin/page.test.tsx` - Unit tests for admin dashboard
-- `src/components/admin/RulesManager.tsx` - Rules engine management component
-- `src/components/admin/RulesManager.test.tsx` - Unit tests for RulesManager component
-- `src/components/admin/ProjectTracker.tsx` - User/project tracking component
-- `src/components/admin/ProjectTracker.test.tsx` - Unit tests for ProjectTracker component
-- `src/lib/ai-assistant.ts` - AI help assistant integration with OpenRouter.ai
-- `src/lib/ai-assistant.test.ts` - Unit tests for AI assistant
-- `src/lib/vector-db.ts` - Vector database setup for RAG system
-- `src/lib/vector-db.test.ts` - Unit tests for vector database
-- `public/artwork-guidelines.pdf` - Beith Digital's artwork guidelines document (provided by user)
-- `src/lib/validation-rules.ts` - Beith Digital's artwork validation rules based on guidelines
-- `tailwind.config.js` - Tailwind CSS configuration with brand colors
-- `next.config.js` - Next.js configuration
-- `jest.config.js` - Jest testing configuration
-- `.env.local` - Environment variables for API keys and configuration
+- `src/components/FileUploader.tsx` - Fixed text colors for better readability
+- `src/components/FileUploader.test.tsx` - Unit tests for file upload component
+- `src/components/VisualPreview.tsx` - Component for displaying artwork previews
+- `src/components/VisualPreview.test.tsx` - Unit tests for visual preview component
+- `src/components/PreflightResults.tsx` - Component for displaying validation results
+- `src/components/PreflightResults.test.tsx` - Unit tests for preflight results
+- `src/components/PrintPreview.tsx` - Component for print preview with overlays
+- `src/components/PrintPreview.test.tsx` - Unit tests for print preview component
+- `src/components/ResponsiveLayout.tsx` - Responsive layout components
+- `src/components/ResponsiveLayout.test.tsx` - Unit tests for responsive layout
+- `src/components/HelpArticles.tsx` - Component for help articles and guidance
+- `src/components/HelpArticles.test.tsx` - Unit tests for help articles
+- `src/app/page.tsx` - Main application page with integrated components
+- `src/app/page.test.tsx` - Unit tests for main page
+- `src/app/api/upload/route.ts` - API routes for file upload handling
+- `src/app/api/upload/route.test.ts` - Unit tests for upload API routes
+- `jest.setup.js` - Jest configuration with global mocks
+- `jest.config.js` - Jest testing framework configuration
+- `package.json` - Project dependencies and scripts
+- `README.md` - Project documentation
+- `tasks/tasks-create-prd.md` - Task list and progress tracking
 
 ## Tasks
 
