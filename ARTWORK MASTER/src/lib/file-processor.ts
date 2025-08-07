@@ -185,42 +185,57 @@ export class FileProcessor {
       const widthMm = Math.round((metadata.width * 25.4) / resolution)
       const heightMm = Math.round((metadata.height * 25.4) / resolution)
       
-      // Check if image dimensions suggest bleed (slightly larger than standard sizes)
-      const standardSizes = [
-        { name: 'A4', width: 210, height: 297 },
-        { name: 'A3', width: 297, height: 420 },
-        { name: 'A2', width: 420, height: 594 },
-        { name: 'A1', width: 594, height: 841 },
-        { name: 'A0', width: 841, height: 1189 },
-        { name: 'Letter', width: 216, height: 279 },
-        { name: 'Legal', width: 216, height: 356 },
-        { name: 'Tabloid', width: 279, height: 432 },
-        { name: 'Business Card', width: 85, height: 55 },
-        { name: 'DL Flyer', width: 99, height: 210 }
-      ]
-      
-      // Method 1: Check if dimensions are close to standard but larger (indicating bleed)
-      const hasBleedDimensions = standardSizes.some(size => {
-        const widthDiff = Math.abs(widthMm - size.width)
-        const heightDiff = Math.abs(heightMm - size.height)
-        // If dimensions are close to standard size but larger, likely has bleed
-        return (widthDiff <= 15 && heightDiff <= 15) && (widthMm > size.width || heightMm > size.height)
-      })
-      
-      // Method 2: Check for common bleed margins (3mm, 5mm, 6mm, 8mm)
-      const commonBleedMargins = [3, 5, 6, 8]
-      const hasBleedMargins = commonBleedMargins.some(margin => {
-        // Check if the image size minus double the margin equals a standard size
-        return standardSizes.some(size => {
-          const expectedWidth = size.width + (margin * 2)
-          const expectedHeight = size.height + (margin * 2)
-          const widthMatch = Math.abs(widthMm - expectedWidth) <= 5
-          const heightMatch = Math.abs(heightMm - expectedHeight) <= 5
-          return widthMatch && heightMatch
-        })
-      })
-      
-      const hasBleed = hasBleedDimensions || hasBleedMargins
+      // Method 1: Analyze image content for bleed indicators
+      let hasBleed = false
+      try {
+        // Use sharp to analyze the image content
+        const imageBuffer = await fs.readFile(filePath)
+        const imageAnalysis = sharp(imageBuffer)
+        
+        // Check for bleed indicators in the image content
+        // Look for extended content beyond typical margins
+        const { data, info } = await imageAnalysis
+          .raw()
+          .toBuffer({ resolveWithObject: true })
+        
+        // Analyze edge pixels to detect if content extends to edges (indicating bleed)
+        const width = info.width
+        const height = info.height
+        const channels = info.channels
+        
+        // Check if content extends to the very edges (indicating no safe margins)
+        const edgeThreshold = 0.1 // 10% threshold for edge content detection
+        
+        // Sample edge pixels to detect if content extends to edges
+        const hasContentAtEdges = await this.detectImageEdgeContent(imageBuffer, width, height, channels, edgeThreshold)
+        
+        if (hasContentAtEdges) {
+          hasBleed = true
+        }
+        
+        // Method 2: Check image metadata for bleed-related information
+        const imageMetadata = await imageAnalysis.metadata()
+        
+        // Check for bleed-related EXIF data or other metadata
+        if (imageMetadata.exif) {
+          // Parse EXIF data for bleed indicators
+          const exifData = await this.parseImageExif(imageBuffer)
+          if (exifData.bleed || exifData.trim || exifData.crop) {
+            hasBleed = true
+          }
+        }
+        
+        // Method 3: Check for color bars or registration marks in the image
+        const hasPrintMarks = await this.detectPrintMarks(imageBuffer, width, height, channels)
+        if (hasPrintMarks) {
+          hasBleed = true
+        }
+        
+      } catch (error) {
+        console.warn('Could not perform detailed image analysis:', error)
+        // Fallback: use actual image dimensions to determine if it's print-ready
+        hasBleed = widthMm > 50 && heightMm > 50 // If image is large enough for print, assume it has bleed
+      }
       
       return {
         dimensions: { width: widthMm, height: heightMm },
@@ -611,6 +626,169 @@ export class FileProcessor {
       '.webp': 'image/webp'
     }
     return mimeTypes[extension.toLowerCase()] || 'application/octet-stream'
+  }
+
+  private async detectImageEdgeContent(imageBuffer: Buffer, width: number, height: number, channels: number, threshold: number): Promise<boolean> {
+    try {
+      // Sample pixels along the edges to detect if content extends to edges
+      const edgeSamples = []
+      
+      // Sample top edge
+      for (let x = 0; x < width; x += Math.max(1, Math.floor(width / 20))) {
+        const pixelIndex = (x + 0 * width) * channels
+        const r = imageBuffer[pixelIndex]
+        const g = imageBuffer[pixelIndex + 1]
+        const b = imageBuffer[pixelIndex + 2]
+        const brightness = (r + g + b) / 3
+        edgeSamples.push(brightness)
+      }
+      
+      // Sample bottom edge
+      for (let x = 0; x < width; x += Math.max(1, Math.floor(width / 20))) {
+        const pixelIndex = (x + (height - 1) * width) * channels
+        const r = imageBuffer[pixelIndex]
+        const g = imageBuffer[pixelIndex + 1]
+        const b = imageBuffer[pixelIndex + 2]
+        const brightness = (r + g + b) / 3
+        edgeSamples.push(brightness)
+      }
+      
+      // Sample left edge
+      for (let y = 0; y < height; y += Math.max(1, Math.floor(height / 20))) {
+        const pixelIndex = (0 + y * width) * channels
+        const r = imageBuffer[pixelIndex]
+        const g = imageBuffer[pixelIndex + 1]
+        const b = imageBuffer[pixelIndex + 2]
+        const brightness = (r + g + b) / 3
+        edgeSamples.push(brightness)
+      }
+      
+      // Sample right edge
+      for (let y = 0; y < height; y += Math.max(1, Math.floor(height / 20))) {
+        const pixelIndex = ((width - 1) + y * width) * channels
+        const r = imageBuffer[pixelIndex]
+        const g = imageBuffer[pixelIndex + 1]
+        const b = imageBuffer[pixelIndex + 2]
+        const brightness = (r + g + b) / 3
+        edgeSamples.push(brightness)
+      }
+      
+      // Calculate variance in edge brightness
+      const avgBrightness = edgeSamples.reduce((sum, val) => sum + val, 0) / edgeSamples.length
+      const variance = edgeSamples.reduce((sum, val) => sum + Math.pow(val - avgBrightness, 2), 0) / edgeSamples.length
+      
+      // If there's significant variation in edge brightness, content likely extends to edges
+      return variance > threshold * 255 * 255
+    } catch (error) {
+      console.warn('Error detecting image edge content:', error)
+      return false
+    }
+  }
+
+  private async parseImageExif(imageBuffer: Buffer): Promise<{ bleed?: boolean; trim?: boolean; crop?: boolean }> {
+    try {
+      // Use sharp to extract EXIF data
+      const image = sharp(imageBuffer)
+      const metadata = await image.metadata()
+      
+      const result: { bleed?: boolean; trim?: boolean; crop?: boolean } = {}
+      
+      // Check for bleed-related EXIF tags
+      if (metadata.exif) {
+        // Parse EXIF data for bleed indicators
+        // This is a simplified approach - in a real implementation you'd use a proper EXIF parser
+        const exifString = metadata.exif.toString()
+        
+        if (exifString.includes('bleed') || exifString.includes('trim') || exifString.includes('crop')) {
+          result.bleed = true
+        }
+        
+        if (exifString.includes('trim')) {
+          result.trim = true
+        }
+        
+        if (exifString.includes('crop')) {
+          result.crop = true
+        }
+      }
+      
+      return result
+    } catch (error) {
+      console.warn('Error parsing image EXIF:', error)
+      return {}
+    }
+  }
+
+  private async detectPrintMarks(imageBuffer: Buffer, width: number, height: number, channels: number): Promise<boolean> {
+    try {
+      // Look for color bars, registration marks, or other print marks
+      // These typically appear as small rectangular areas with specific color patterns
+      
+      // Sample areas where print marks are commonly placed
+      const markAreas = [
+        // Top-left corner
+        { x: 0, y: 0, w: Math.min(50, width / 10), h: Math.min(50, height / 10) },
+        // Top-right corner
+        { x: width - Math.min(50, width / 10), y: 0, w: Math.min(50, width / 10), h: Math.min(50, height / 10) },
+        // Bottom-left corner
+        { x: 0, y: height - Math.min(50, height / 10), w: Math.min(50, width / 10), h: Math.min(50, height / 10) },
+        // Bottom-right corner
+        { x: width - Math.min(50, width / 10), y: height - Math.min(50, height / 10), w: Math.min(50, width / 10), h: Math.min(50, height / 10) }
+      ]
+      
+      for (const area of markAreas) {
+        // Sample pixels in the mark area
+        const samples = []
+        for (let y = area.y; y < area.y + area.h; y += 2) {
+          for (let x = area.x; x < area.x + area.w; x += 2) {
+            const pixelIndex = (x + y * width) * channels
+            if (pixelIndex < imageBuffer.length - channels) {
+              const r = imageBuffer[pixelIndex]
+              const g = imageBuffer[pixelIndex + 1]
+              const b = imageBuffer[pixelIndex + 2]
+              samples.push({ r, g, b })
+            }
+          }
+        }
+        
+        // Check for color bar patterns (high contrast, specific color sequences)
+        if (samples.length > 10) {
+          const hasHighContrast = this.detectColorBarPattern(samples)
+          if (hasHighContrast) {
+            return true
+          }
+        }
+      }
+      
+      return false
+    } catch (error) {
+      console.warn('Error detecting print marks:', error)
+      return false
+    }
+  }
+
+  private detectColorBarPattern(samples: Array<{ r: number; g: number; b: number }>): boolean {
+    try {
+      // Look for high contrast patterns typical of color bars
+      const contrasts = []
+      
+      for (let i = 1; i < samples.length; i++) {
+        const prev = samples[i - 1]
+        const curr = samples[i]
+        
+        const contrast = Math.abs(prev.r - curr.r) + Math.abs(prev.g - curr.g) + Math.abs(prev.b - curr.b)
+        contrasts.push(contrast)
+      }
+      
+      // Calculate average contrast
+      const avgContrast = contrasts.reduce((sum, val) => sum + val, 0) / contrasts.length
+      
+      // High contrast suggests color bars or registration marks
+      return avgContrast > 100
+    } catch (error) {
+      console.warn('Error detecting color bar pattern:', error)
+      return false
+    }
   }
 }
 
