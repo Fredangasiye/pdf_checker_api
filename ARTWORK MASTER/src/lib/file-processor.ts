@@ -191,21 +191,42 @@ export class FileProcessor {
         { name: 'A3', width: 297, height: 420 },
         { name: 'A2', width: 420, height: 594 },
         { name: 'A1', width: 594, height: 841 },
-        { name: 'A0', width: 841, height: 1189 }
+        { name: 'A0', width: 841, height: 1189 },
+        { name: 'Letter', width: 216, height: 279 },
+        { name: 'Legal', width: 216, height: 356 },
+        { name: 'Tabloid', width: 279, height: 432 },
+        { name: 'Business Card', width: 85, height: 55 },
+        { name: 'DL Flyer', width: 99, height: 210 }
       ]
       
+      // Method 1: Check if dimensions are close to standard but larger (indicating bleed)
       const hasBleedDimensions = standardSizes.some(size => {
         const widthDiff = Math.abs(widthMm - size.width)
         const heightDiff = Math.abs(heightMm - size.height)
-        // If dimensions are close to standard size but slightly larger, likely has bleed
-        return (widthDiff <= 10 && heightDiff <= 10) && (widthMm > size.width || heightMm > size.height)
+        // If dimensions are close to standard size but larger, likely has bleed
+        return (widthDiff <= 15 && heightDiff <= 15) && (widthMm > size.width || heightMm > size.height)
       })
+      
+      // Method 2: Check for common bleed margins (3mm, 5mm, 6mm, 8mm)
+      const commonBleedMargins = [3, 5, 6, 8]
+      const hasBleedMargins = commonBleedMargins.some(margin => {
+        // Check if the image size minus double the margin equals a standard size
+        return standardSizes.some(size => {
+          const expectedWidth = size.width + (margin * 2)
+          const expectedHeight = size.height + (margin * 2)
+          const widthMatch = Math.abs(widthMm - expectedWidth) <= 5
+          const heightMatch = Math.abs(heightMm - expectedHeight) <= 5
+          return widthMatch && heightMatch
+        })
+      })
+      
+      const hasBleed = hasBleedDimensions || hasBleedMargins
       
       return {
         dimensions: { width: widthMm, height: heightMm },
         resolution,
         colorSpace,
-        hasBleed: hasBleedDimensions,
+        hasBleed: hasBleed,
         hasLiveArea: widthMm > 50 && heightMm > 50,
         fonts: [],
         spotColors: [],
@@ -282,32 +303,98 @@ export class FileProcessor {
 
   private async checkPDFBleed(pdfDoc: PDFDocument): Promise<boolean> {
     try {
-      // Analyze PDF content for bleed indicators
       const pages = pdfDoc.getPages()
       if (pages.length === 0) return false
       
       const firstPage = pages[0]
       const { width, height } = firstPage.getSize()
       
-      // For now, use a heuristic based on page dimensions
-      // If the page has standard print dimensions with extra space, it likely has bleed
+      // Method 1: Check for PDF box definitions (most accurate)
+      try {
+        // Access the PDF's page tree and look for box definitions
+        const pageDict = firstPage.node
+        if (pageDict && pageDict.MediaBox && pageDict.CropBox) {
+          const mediaBox = pageDict.MediaBox()
+          const cropBox = pageDict.CropBox()
+          
+          // If MediaBox is larger than CropBox, it likely has bleed
+          if (mediaBox && cropBox) {
+            const mediaArray = mediaBox.asArray()
+            const cropArray = cropBox.asArray()
+            
+            if (mediaArray && cropArray && mediaArray.length >= 4 && cropArray.length >= 4) {
+              // Convert PDF objects to numbers safely
+              const mediaWidth = Math.abs(Number(mediaArray[2]) - Number(mediaArray[0])) * 0.3528
+              const mediaHeight = Math.abs(Number(mediaArray[3]) - Number(mediaArray[1])) * 0.3528
+              const cropWidth = Math.abs(Number(cropArray[2]) - Number(cropArray[0])) * 0.3528
+              const cropHeight = Math.abs(Number(cropArray[3]) - Number(cropArray[1])) * 0.3528
+              
+              // If MediaBox is significantly larger than CropBox, it has bleed
+              const widthDiff = mediaWidth - cropWidth
+              const heightDiff = mediaHeight - cropHeight
+              
+              if (widthDiff > 3 || heightDiff > 3) {
+                return true
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Could not access PDF box definitions:', error)
+      }
+      
+      // Method 2: Check for bleed marks or registration marks in content
+      try {
+        const pdfBytes = await fs.readFile(pdfDoc.toString())
+        const pdfContent = pdfBytes.toString('utf8', 0, Math.min(pdfBytes.length, 100000))
+        
+        // Look for bleed-related content
+        const bleedIndicators = [
+          '/BleedBox',
+          '/TrimBox',
+          '/ArtBox',
+          'bleed',
+          'trim',
+          'crop',
+          'registration',
+          'color bar',
+          'mark',
+          'margin'
+        ]
+        
+        const hasBleedContent = bleedIndicators.some(indicator => 
+          pdfContent.toLowerCase().includes(indicator.toLowerCase())
+        )
+        
+        if (hasBleedContent) {
+          return true
+        }
+      } catch (error) {
+        console.warn('Could not analyze PDF content for bleed indicators:', error)
+      }
+      
+      // Method 3: Dimension-based heuristic (fallback)
+      const widthMm = Math.round(width * 0.3528)
+      const heightMm = Math.round(height * 0.3528)
+      
+      // Check if dimensions are non-standard (suggesting bleed)
       const standardSizes = [
         { name: 'A4', width: 210, height: 297 },
         { name: 'A3', width: 297, height: 420 },
         { name: 'A2', width: 420, height: 594 },
         { name: 'A1', width: 594, height: 841 },
-        { name: 'A0', width: 841, height: 1189 }
+        { name: 'A0', width: 841, height: 1189 },
+        { name: 'Letter', width: 216, height: 279 },
+        { name: 'Legal', width: 216, height: 356 },
+        { name: 'Tabloid', width: 279, height: 432 }
       ]
       
-      const widthMm = Math.round(width * 0.3528)
-      const heightMm = Math.round(height * 0.3528)
-      
-      // Check if dimensions suggest bleed (slightly larger than standard sizes)
+      // Check if dimensions are close to standard but slightly larger
       const hasBleedDimensions = standardSizes.some(size => {
         const widthDiff = Math.abs(widthMm - size.width)
         const heightDiff = Math.abs(heightMm - size.height)
-        // If dimensions are close to standard size but slightly larger, likely has bleed
-        return (widthDiff <= 10 && heightDiff <= 10) && (widthMm > size.width || heightMm > size.height)
+        // If dimensions are close to standard size but larger, likely has bleed
+        return (widthDiff <= 15 && heightDiff <= 15) && (widthMm > size.width || heightMm > size.height)
       })
       
       return hasBleedDimensions
