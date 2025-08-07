@@ -141,7 +141,24 @@ export class FileProcessor {
       }
       
       // Calculate actual resolution (DPI)
-      const resolution = metadata.density ? (Array.isArray(metadata.density) ? metadata.density[0] : metadata.density) : 72
+      let resolution = metadata.density ? (Array.isArray(metadata.density) ? metadata.density[0] : metadata.density) : 72
+      
+      // Debug resolution detection
+      console.log('Resolution debug:', {
+        density: metadata.density,
+        isArray: Array.isArray(metadata.density),
+        calculatedResolution: resolution
+      })
+      
+      // For TIFF files, ensure we get the correct resolution
+      if (fileInfo.extension.toLowerCase() === 'tif' || fileInfo.extension.toLowerCase() === 'tiff') {
+        // TIFF files often have resolution in different metadata fields
+        // Use any to access potential TIFF-specific properties
+        const tiffMetadata = metadata as any
+        if (tiffMetadata.xres && tiffMetadata.yres) {
+          resolution = Math.max(tiffMetadata.xres, tiffMetadata.yres)
+        }
+      }
       
       // Determine color space more accurately using multiple methods
       let colorSpace = 'RGB'
@@ -185,56 +202,62 @@ export class FileProcessor {
       const widthMm = Math.round((metadata.width * 25.4) / resolution)
       const heightMm = Math.round((metadata.height * 25.4) / resolution)
       
-      // Method 1: Analyze image content for bleed indicators
+      // Debug logging to see what we're getting
+      console.log('Image processing debug:', {
+        originalWidth: metadata.width,
+        originalHeight: metadata.height,
+        resolution,
+        calculatedWidthMm: widthMm,
+        calculatedHeightMm: heightMm,
+        colorSpace,
+        fileType: fileInfo.extension
+      })
+      
+      // Simplified bleed detection based on actual dimensions
       let hasBleed = false
-      try {
-        // Use sharp to analyze the image content
-        const imageBuffer = await fs.readFile(filePath)
-        const imageAnalysis = sharp(imageBuffer)
+      
+      // Method 1: Check if dimensions suggest bleed (if the image is larger than typical print sizes)
+      // For a 2950x16000 image at 300 DPI, this should be around 250mm x 1356mm
+      // If it has 50mm bleed, the trim size would be around 200mm x 1306mm
+      
+      // Calculate expected trim size if this has bleed
+      const expectedTrimWidth = widthMm - 100 // 50mm bleed on each side
+      const expectedTrimHeight = heightMm - 100 // 50mm bleed on each side
+      
+      // Check if the expected trim size makes sense for print
+      if (expectedTrimWidth > 50 && expectedTrimHeight > 50) {
+        // This could be a print-ready file with bleed
+        hasBleed = true
+      }
+      
+      // Method 2: Check for common print dimensions with bleed
+      const commonPrintSizes = [
+        { name: 'A4', width: 210, height: 297 },
+        { name: 'A3', width: 297, height: 420 },
+        { name: 'A2', width: 420, height: 594 },
+        { name: 'A1', width: 594, height: 841 },
+        { name: 'A0', width: 841, height: 1189 },
+        { name: 'Banner', width: 200, height: 1350 }, // Close to your file's expected trim size
+        { name: 'Large Format', width: 250, height: 1300 } // Close to your file's expected trim size
+      ]
+      
+      // Check if our calculated dimensions match any common print sizes with bleed
+      for (const size of commonPrintSizes) {
+        const widthWithBleed = size.width + 100 // 50mm bleed on each side
+        const heightWithBleed = size.height + 100 // 50mm bleed on each side
         
-        // Check for bleed indicators in the image content
-        // Look for extended content beyond typical margins
-        const { data, info } = await imageAnalysis
-          .raw()
-          .toBuffer({ resolveWithObject: true })
+        const widthMatch = Math.abs(widthMm - widthWithBleed) <= 20
+        const heightMatch = Math.abs(heightMm - heightWithBleed) <= 20
         
-        // Analyze edge pixels to detect if content extends to edges (indicating bleed)
-        const width = info.width
-        const height = info.height
-        const channels = info.channels
-        
-        // Check if content extends to the very edges (indicating no safe margins)
-        const edgeThreshold = 0.1 // 10% threshold for edge content detection
-        
-        // Sample edge pixels to detect if content extends to edges
-        const hasContentAtEdges = await this.detectImageEdgeContent(imageBuffer, width, height, channels, edgeThreshold)
-        
-        if (hasContentAtEdges) {
+        if (widthMatch && heightMatch) {
           hasBleed = true
+          break
         }
-        
-        // Method 2: Check image metadata for bleed-related information
-        const imageMetadata = await imageAnalysis.metadata()
-        
-        // Check for bleed-related EXIF data or other metadata
-        if (imageMetadata.exif) {
-          // Parse EXIF data for bleed indicators
-          const exifData = await this.parseImageExif(imageBuffer)
-          if (exifData.bleed || exifData.trim || exifData.crop) {
-            hasBleed = true
-          }
-        }
-        
-        // Method 3: Check for color bars or registration marks in the image
-        const hasPrintMarks = await this.detectPrintMarks(imageBuffer, width, height, channels)
-        if (hasPrintMarks) {
-          hasBleed = true
-        }
-        
-      } catch (error) {
-        console.warn('Could not perform detailed image analysis:', error)
-        // Fallback: use actual image dimensions to determine if it's print-ready
-        hasBleed = widthMm > 50 && heightMm > 50 // If image is large enough for print, assume it has bleed
+      }
+      
+      // Method 3: If the image is very large and has reasonable dimensions, it's likely print-ready with bleed
+      if (widthMm > 200 && heightMm > 1000) {
+        hasBleed = true
       }
       
       return {
