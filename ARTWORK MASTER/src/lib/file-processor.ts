@@ -143,7 +143,7 @@ export class FileProcessor {
       // Calculate actual resolution (DPI)
       const resolution = metadata.density ? (Array.isArray(metadata.density) ? metadata.density[0] : metadata.density) : 72
       
-      // Determine color space more accurately
+      // Determine color space more accurately using multiple methods
       let colorSpace = 'RGB'
       if (metadata.space === 'cmyk') {
         colorSpace = 'CMYK'
@@ -151,6 +151,15 @@ export class FileProcessor {
         colorSpace = 'RGB'
       } else if (metadata.space === 'b-w') {
         colorSpace = 'GRAYSCALE'
+      } else {
+        // Try to detect from channels
+        if (metadata.channels === 4) {
+          colorSpace = 'CMYK'
+        } else if (metadata.channels === 3) {
+          colorSpace = 'RGB'
+        } else if (metadata.channels === 1) {
+          colorSpace = 'GRAYSCALE'
+        }
       }
       
       // For TIFF files, try to get more accurate color space info
@@ -303,27 +312,36 @@ export class FileProcessor {
   private async detectPDFSpotColors(pdfDoc: PDFDocument): Promise<string[]> {
     try {
       // Try to detect spot colors from PDF content
-      // This is a simplified approach - in a real implementation you'd parse the PDF's color definitions
       const pages = pdfDoc.getPages()
       
       // Check if PDF has spot color definitions
       const pdfBytes = await fs.readFile(pdfDoc.toString())
-      const pdfContent = pdfBytes.toString('utf8', 0, Math.min(pdfBytes.length, 10000))
+      const pdfContent = pdfBytes.toString('utf8', 0, Math.min(pdfBytes.length, 20000))
       
       const spotColors: string[] = []
       
       // Look for common spot color patterns
       if (pdfContent.includes('Pantone') || pdfContent.includes('PANTONE')) {
-        // Extract Pantone color names
-        const pantoneMatches = pdfContent.match(/Pantone\s+(\w+\s+\w+)/gi)
+        // Extract Pantone color names with more patterns
+        const pantoneMatches = pdfContent.match(/Pantone\s+(\w+\s+\w+)/gi) || 
+                              pdfContent.match(/PANTONE\s+(\w+\s+\w+)/gi) ||
+                              pdfContent.match(/Pantone\s+(\w+)/gi) ||
+                              pdfContent.match(/PANTONE\s+(\w+)/gi)
         if (pantoneMatches) {
           spotColors.push(...pantoneMatches.map(match => match.trim()))
         }
       }
       
       // Look for other spot color indicators
-      if (pdfContent.includes('/Separation') || pdfContent.includes('/Spot')) {
+      if (pdfContent.includes('/Separation') || pdfContent.includes('/Spot') || 
+          pdfContent.includes('/DeviceN') || pdfContent.includes('/NChannel')) {
         spotColors.push('Custom Spot Color')
+      }
+      
+      // Look for specific color names that might be spot colors
+      const colorMatches = pdfContent.match(/(\w+)\s+(\d+)\s+C\s+(\d+)\s+M\s+(\d+)\s+Y\s+(\d+)\s+K/gi)
+      if (colorMatches) {
+        spotColors.push(...colorMatches.map(match => `Custom Color: ${match}`))
       }
       
       return spotColors
