@@ -180,12 +180,33 @@ export class FileProcessor {
         }
       }
       
+      // Convert pixels to mm based on resolution
+      // Formula: mm = (pixels * 25.4) / DPI
+      const widthMm = Math.round((metadata.width * 25.4) / resolution)
+      const heightMm = Math.round((metadata.height * 25.4) / resolution)
+      
+      // Check if image dimensions suggest bleed (slightly larger than standard sizes)
+      const standardSizes = [
+        { name: 'A4', width: 210, height: 297 },
+        { name: 'A3', width: 297, height: 420 },
+        { name: 'A2', width: 420, height: 594 },
+        { name: 'A1', width: 594, height: 841 },
+        { name: 'A0', width: 841, height: 1189 }
+      ]
+      
+      const hasBleedDimensions = standardSizes.some(size => {
+        const widthDiff = Math.abs(widthMm - size.width)
+        const heightDiff = Math.abs(heightMm - size.height)
+        // If dimensions are close to standard size but slightly larger, likely has bleed
+        return (widthDiff <= 10 && heightDiff <= 10) && (widthMm > size.width || heightMm > size.height)
+      })
+      
       return {
-        dimensions: { width: metadata.width, height: metadata.height },
+        dimensions: { width: widthMm, height: heightMm },
         resolution,
         colorSpace,
-        hasBleed: false, // Images don't have bleed by default
-        hasLiveArea: false,
+        hasBleed: hasBleedDimensions,
+        hasLiveArea: widthMm > 50 && heightMm > 50,
         fonts: [],
         spotColors: [],
         fileType: fileInfo.extension.toUpperCase() === 'TIF' ? 'TIF' : 'Image',
@@ -223,12 +244,16 @@ export class FileProcessor {
       // Detect spot colors from PDF content
       const spotColors = await this.detectPDFSpotColors(pdfDoc)
       
+      // Check for bleed and live area
+      const hasBleed = await this.checkPDFBleed(pdfDoc)
+      const hasLiveArea = await this.checkPDFLiveArea(pdfDoc)
+      
       return {
         dimensions: { width: widthMm, height: heightMm },
         resolution: 300, // PDFs are typically 300 DPI for print
         colorSpace,
-        hasBleed: this.checkPDFBleed(pdfDoc),
-        hasLiveArea: this.checkPDFLiveArea(pdfDoc),
+        hasBleed,
+        hasLiveArea,
         fonts: await this.extractPDFFonts(pdfDoc),
         spotColors,
         fileType: 'PDF',
@@ -255,16 +280,63 @@ export class FileProcessor {
     }
   }
 
-  private checkPDFBleed(pdfDoc: PDFDocument): boolean {
-    // This would require analyzing the PDF content for bleed marks or extended content
-    // For now, return a reasonable default
-    return true
+  private async checkPDFBleed(pdfDoc: PDFDocument): Promise<boolean> {
+    try {
+      // Analyze PDF content for bleed indicators
+      const pages = pdfDoc.getPages()
+      if (pages.length === 0) return false
+      
+      const firstPage = pages[0]
+      const { width, height } = firstPage.getSize()
+      
+      // For now, use a heuristic based on page dimensions
+      // If the page has standard print dimensions with extra space, it likely has bleed
+      const standardSizes = [
+        { name: 'A4', width: 210, height: 297 },
+        { name: 'A3', width: 297, height: 420 },
+        { name: 'A2', width: 420, height: 594 },
+        { name: 'A1', width: 594, height: 841 },
+        { name: 'A0', width: 841, height: 1189 }
+      ]
+      
+      const widthMm = Math.round(width * 0.3528)
+      const heightMm = Math.round(height * 0.3528)
+      
+      // Check if dimensions suggest bleed (slightly larger than standard sizes)
+      const hasBleedDimensions = standardSizes.some(size => {
+        const widthDiff = Math.abs(widthMm - size.width)
+        const heightDiff = Math.abs(heightMm - size.height)
+        // If dimensions are close to standard size but slightly larger, likely has bleed
+        return (widthDiff <= 10 && heightDiff <= 10) && (widthMm > size.width || heightMm > size.height)
+      })
+      
+      return hasBleedDimensions
+    } catch (error) {
+      console.error('Error checking PDF bleed:', error)
+      return false
+    }
   }
 
-  private checkPDFLiveArea(pdfDoc: PDFDocument): boolean {
-    // This would require analyzing the PDF content for live area marks
-    // For now, return a reasonable default
-    return true
+  private async checkPDFLiveArea(pdfDoc: PDFDocument): Promise<boolean> {
+    try {
+      // Analyze PDF content for live area indicators
+      const pages = pdfDoc.getPages()
+      if (pages.length === 0) return false
+      
+      // For now, assume live area is configured if the PDF has reasonable dimensions
+      // This is a simplified approach - in a real implementation you'd analyze the content
+      const firstPage = pages[0]
+      const { width, height } = firstPage.getSize()
+      
+      const widthMm = Math.round(width * 0.3528)
+      const heightMm = Math.round(height * 0.3528)
+      
+      // If dimensions are reasonable for print, assume live area is configured
+      return widthMm > 50 && heightMm > 50
+    } catch (error) {
+      console.error('Error checking PDF live area:', error)
+      return false
+    }
   }
 
   private async extractPDFFonts(pdfDoc: PDFDocument): Promise<string[]> {
