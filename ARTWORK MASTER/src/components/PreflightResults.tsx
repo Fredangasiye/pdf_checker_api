@@ -249,7 +249,7 @@ export default function PreflightResults({
           {onRetry && (
             <button
               onClick={onRetry}
-              className="px-4 py-2 text-beith-gray-700 bg-white border border-beith-gray-300 rounded-lg hover:bg-beith-gray-50 focus:outline-none focus:ring-2 focus:ring-beith-blue-500"
+              className="px-4 py-2 text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Upload New File
             </button>
@@ -267,7 +267,7 @@ export default function PreflightResults({
           )}
           <button
             onClick={() => window.print()}
-            className="px-4 py-2 text-beith-gray-700 bg-white border border-beith-gray-300 rounded-lg hover:bg-beith-gray-50 focus:outline-none focus:ring-2 focus:ring-beith-blue-500"
+                          className="px-4 py-2 text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Print Results
           </button>

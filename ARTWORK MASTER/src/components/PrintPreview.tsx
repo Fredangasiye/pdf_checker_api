@@ -25,7 +25,7 @@ export default function PrintPreview({
 
   return (
     <div className="flex flex-col items-center p-4 bg-beith-gray-100 rounded-lg">
-      <h3 className="text-lg font-semibold text-beith-gray-900 mb-4">Print Preview</h3>
+              <h3 className="text-lg font-semibold text-black mb-4">Print Preview</h3>
       
       <div className="relative border-2 border-beith-gray-300 bg-white shadow-lg" 
            style={{ width: displayWidth, height: displayHeight }}>
@@ -84,7 +84,7 @@ export default function PrintPreview({
         </div>
       </div>
       
-      <div className="mt-2 text-xs text-beith-gray-600">
+                  <div className="mt-2 text-xs text-black">
         Dimensions: {dimensions.width}mm × {dimensions.height}mm | Scale: {scale * 100}%
       </div>
     </div>
