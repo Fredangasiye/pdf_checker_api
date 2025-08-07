@@ -139,12 +139,18 @@ export default function PreflightResults({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             {metadata.dimensions && (
               <div>
-                <span className="font-medium text-black">Dimensions:</span>
+                <span className="font-medium text-black">Finished Size:</span>
                 <span className="ml-2 text-black">
                   {metadata.dimensions.height}mm x {metadata.dimensions.width}mm
                 </span>
               </div>
             )}
+            <div>
+              <span className="font-medium text-black">File Size:</span>
+              <span className="ml-2 text-black">
+                {(fileSize / 1024 / 1024).toFixed(2)} MB
+              </span>
+            </div>
             {metadata.resolution && (
               <div>
                 <span className="font-medium text-black">Resolution:</span>
@@ -155,6 +161,18 @@ export default function PreflightResults({
               <div>
                 <span className="font-medium text-black">Color Space:</span>
                 <span className="ml-2 text-black">{metadata.colorSpace}</span>
+              </div>
+            )}
+            <div>
+              <span className="font-medium text-black">Bleed:</span>
+              <span className="ml-2 text-black">
+                {metadata.hasBleed ? '3mm (Configured)' : 'Not configured'}
+              </span>
+            </div>
+            {metadata.spotColors && metadata.spotColors.length > 0 && (
+              <div>
+                <span className="font-medium text-black">Spot Colors:</span>
+                <span className="ml-2 text-black">{metadata.spotColors.length} detected</span>
               </div>
             )}
             {metadata.fonts && metadata.fonts.length > 0 && (
