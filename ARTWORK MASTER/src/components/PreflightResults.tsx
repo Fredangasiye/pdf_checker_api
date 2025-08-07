@@ -141,7 +141,10 @@ export default function PreflightResults({
               <div>
                 <span className="font-medium text-black">Finished Size:</span>
                 <span className="ml-2 text-black">
-                  {metadata.dimensions.height}mm x {metadata.dimensions.width}mm
+                  {metadata.hasBleed 
+                    ? `${metadata.dimensions.height - 6}mm x ${metadata.dimensions.width - 6}mm (trim size)`
+                    : `${metadata.dimensions.height}mm x ${metadata.dimensions.width}mm`
+                  }
                 </span>
               </div>
             )}
