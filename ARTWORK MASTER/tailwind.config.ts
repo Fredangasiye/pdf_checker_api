@@ -6,6 +6,7 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  important: true, // Force Tailwind to override any external CSS
   theme: {
     extend: {
       colors: {
@@ -57,6 +58,21 @@ const config: Config = {
     },
   },
   plugins: [],
+  safelist: [
+    'bg-gray-800',
+    'bg-gray-900',
+    'bg-blue-600',
+    'bg-red-500',
+    'text-white',
+    'text-gray-300',
+    'text-gray-400',
+    'text-blue-600',
+    'text-red-500',
+    'border-blue-500',
+    'border-gray-600',
+    'shadow-lg',
+    'shadow-xl',
+  ]
 }
 
 export default config 

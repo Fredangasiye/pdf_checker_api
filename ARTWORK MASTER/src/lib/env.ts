@@ -40,7 +40,7 @@ export const env = {
 
 // Validation function to ensure required environment variables are set
 export function validateEnv() {
-  const requiredVars = [
+  const requiredVars: string[] = [
     // Add required variables here when implementing features
     // 'OPENROUTER_API_KEY', // Required for AI assistant
     // 'PINECONE_API_KEY', // Required for vector database
@@ -72,4 +72,26 @@ export function isValidFileSize(size: number): boolean {
 export function isValidFileType(filename: string): boolean {
   const extension = filename.split('.').pop()?.toLowerCase()
   return extension ? env.ALLOWED_FILE_TYPES.includes(extension) : false
-} 
+}
+
+// AI Assistant Configuration
+export const AI_CONFIG = {
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+  OPENROUTER_BASE_URL: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',
+  MISTRAL_MODEL: process.env.MISTRAL_MODEL || 'mistralai/mistral-7b-instruct',
+  MAX_TOKENS: 1000,
+  TEMPERATURE: 0.7,
+} as const
+
+// Chatbot system prompt for BEITHA
+export const BEITHA_SYSTEM_PROMPT = `You are BEITHA, an AI assistant for the Beith Digital Preflight Portal. You help users with:
+
+1. **Artwork Analysis**: Explain preflight results, font issues, color space problems, spot color detection
+2. **File Processing**: Guide users through PDF color changes, bleed addition/removal, file validation
+3. **Print Production**: Provide advice on print specifications, resolution, color management
+4. **Software Guidance**: Help with Adobe Illustrator, Photoshop, InDesign workflows
+5. **Technical Support**: Answer questions about file formats, color spaces, print requirements
+
+Always be helpful, professional, and concise. Use technical terms when appropriate but explain them clearly. If you don't know something, say so rather than guessing.
+
+Current context: User is working with artwork files and print production tools.`

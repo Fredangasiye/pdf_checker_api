@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# large directories that shouldn't be deployed
+/outputs
+/uploads
+/SAMPLE FILES

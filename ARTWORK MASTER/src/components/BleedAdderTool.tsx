@@ -82,7 +82,7 @@ export default function BleedAdderTool({ onBleedAddition, isProcessing }: BleedA
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-white mb-2">Bleed Adder Tool</h2>
-          <p className="text-gray-300">
+          <p className="text-gray-700">
             Add bleed to your artwork by mirroring edge content
           </p>
         </div>

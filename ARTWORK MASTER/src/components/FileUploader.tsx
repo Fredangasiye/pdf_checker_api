@@ -110,16 +110,16 @@ export default function FileUploader({
 
   const getDragOverStyles = () => {
     if (uploadState.isDragOver) {
-      return 'border-blue-400 bg-blue-50'
+      return 'border-blue-400 bg-blue-900/20'
     }
-    return 'border-gray-300 hover:border-blue-400'
+    return 'border-gray-600 hover:border-blue-400'
   }
 
   const getUploadProgressStyles = () => {
     if (uploadState.isUploading) {
-      return 'bg-blue-100'
+      return 'bg-gray-700/50'
     }
-    return 'bg-white'
+    return 'bg-gray-800/30'
   }
 
   return (
@@ -129,7 +129,7 @@ export default function FileUploader({
         tabIndex={disabled ? -1 : 0}
         aria-label="Upload file"
         className={`
-          relative border-2 border-dashed rounded-lg p-8 transition-all duration-200
+          relative border-2 border-dashed rounded-lg p-8 transition-all duration-200 backdrop-blur-sm
           ${getDragOverStyles()}
           ${getUploadProgressStyles()}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
@@ -157,15 +157,15 @@ export default function FileUploader({
         <div className="text-center">
           {uploadState.isUploading ? (
             <div className="space-y-4">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
-                <svg className="animate-spin h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-900/30">
+                <svg className="animate-spin h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Uploading...</p>
-                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div className="mt-2 w-full bg-gray-700 rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${uploadState.progress}%` }}
@@ -176,7 +176,7 @@ export default function FileUploader({
             </div>
           ) : (
             <>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-900/30 mb-4">
                 <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
@@ -184,7 +184,7 @@ export default function FileUploader({
               <p className="text-sm text-gray-800 mb-2">
                 <span className="font-medium text-blue-600">Click to upload</span> or drag and drop
               </p>
-              <p className="text-xs text-gray-700">
+              <p className="text-xs text-gray-600">
                 {acceptedTypes.join(', ').toUpperCase()} files up to {(maxSize / 1024 / 1024).toFixed(0)}MB
               </p>
             </>

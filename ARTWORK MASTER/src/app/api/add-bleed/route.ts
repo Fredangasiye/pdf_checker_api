@@ -1,8 +1,8 @@
-// import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir, readFile } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
-import { PDFDocument, PDFPage, PDFImage, PDFFormXObject } from 'pdf-lib'
+import { PDFDocument } from 'pdf-lib'
 
 interface BleedAdditionConfig {
   addTop: boolean
@@ -14,8 +14,8 @@ interface BleedAdditionConfig {
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData()
-    const file = formData.get('file') as File
+    const formData = await request.formData() as any
+    const file = formData.get('file')
     const addTop = formData.get('addTop') === 'true'
     const addRight = formData.get('addRight') === 'true'
     const addBottom = formData.get('addBottom') === 'true'
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       const pdfBuffer = await readFile(outputPath)
       
       // Return the PDF file for download
-      const response = new Response(pdfBuffer, {
+      const response = new Response(new Uint8Array(pdfBuffer), {
         status: 200,
         headers: {
           'Content-Type': 'application/pdf',
@@ -143,73 +143,6 @@ async function addBleedToPDF(
         width: width,
         height: height
       })
-      
-      // Add extended content for bleed areas (correct positioning)
-      console.log('🔍 DEBUG: Adding bleed areas...')
-      console.log('🔍 DEBUG: Original page size:', width, 'x', height, 'points')
-      console.log('🔍 DEBUG: New page size:', newWidth, 'x', newHeight, 'points')
-      console.log('🔍 DEBUG: Offset X:', offsetX, 'Y:', offsetY)
-      console.log('🔍 DEBUG: Bleed points:', bleedPoints)
-      
-      if (config.addLeft) {
-        console.log('🔍 DEBUG: Adding LEFT bleed at x=0, y=', offsetY, 'width=', bleedPoints, 'height=', height)
-        // Extend left edge content by showing the right edge portion
-        newPage.drawPage(embeddedPage, {
-          x: 0,  // Start at left edge
-          y: offsetY,
-          width: bleedPoints,
-          height: height,
-          sourceX: width - bleedPoints,
-          sourceY: 0,
-          sourceWidth: bleedPoints,
-          sourceHeight: height
-        })
-      }
-      
-      if (config.addRight) {
-        console.log('🔍 DEBUG: Adding RIGHT bleed at x=', newWidth - bleedPoints, 'y=', offsetY, 'width=', bleedPoints, 'height=', height)
-        // Extend right edge content by showing the left edge portion
-        newPage.drawPage(embeddedPage, {
-          x: newWidth - bleedPoints,  // Start at right edge
-          y: offsetY,
-          width: bleedPoints,
-          height: height,
-          sourceX: 0,
-          sourceY: 0,
-          sourceWidth: bleedPoints,
-          sourceHeight: height
-        })
-      }
-      
-      if (config.addTop) {
-        console.log('🔍 DEBUG: Adding TOP bleed at x=', offsetX, 'y=', newHeight - bleedPoints, 'width=', width, 'height=', bleedPoints)
-        // Extend top edge content by showing the bottom edge portion
-        newPage.drawPage(embeddedPage, {
-          x: offsetX,
-          y: newHeight - bleedPoints,  // Start at top edge
-          width: width,
-          height: bleedPoints,
-          sourceX: 0,
-          sourceY: 0,
-          sourceWidth: width,
-          sourceHeight: bleedPoints
-        })
-      }
-      
-      if (config.addBottom) {
-        console.log('🔍 DEBUG: Adding BOTTOM bleed at x=', offsetX, 'y=0, width=', width, 'height=', bleedPoints)
-        // Extend bottom edge content by showing the top edge portion
-        newPage.drawPage(embeddedPage, {
-          x: offsetX,
-          y: 0,  // Start at bottom edge
-          width: width,
-          height: bleedPoints,
-          sourceX: 0,
-          sourceY: height - bleedPoints,
-          sourceWidth: width,
-          sourceHeight: bleedPoints
-        })
-      }
     }
 
     // Remove the original pages
@@ -231,4 +164,4 @@ async function addBleedToPDF(
       error: error instanceof Error ? error.message : 'Unknown error occurred' 
     }
   }
-} 
+}

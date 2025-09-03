@@ -1,10 +1,18 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import FileUploader from '@/components/FileUploader'
 import VisualPreview from '@/components/VisualPreview'
 import PreflightResults from '@/components/PreflightResults'
 import PrintPreview from '@/components/PrintPreview'
+import BEITHAChatbot from '@/components/BEITHAChatbot'
+import ChatButton from '@/components/ChatButton'
+import SidebarNavigation from '@/components/SidebarNavigation'
+import MediaGallery from '@/components/MediaGallery'
+import BleedAdderTool from '@/components/BleedAdderTool'
+import BleedRemovalTool from '@/components/BleedRemovalTool'
+import PDFColorChanger from '@/components/PDFColorChanger'
+import PullUpBannerTool from '@/components/PullUpBannerTool'
 import { validateArtwork } from '@/lib/validation-rules'
 
 interface UploadState {
@@ -14,6 +22,36 @@ interface UploadState {
   error: string | null
 }
 
+interface MediaItem {
+    id: string
+    name: string
+    type: string
+  size: number
+    url: string
+  category: string
+    uploadDate: Date
+  uploadedAt: Date
+}
+
+interface DocumentItem {
+    id: string
+    name: string
+    type: string
+  size: number
+    url: string
+  uploadedAt: Date
+}
+
+type ActiveTool = 'file-upload' | 'bleed-add' | 'bleed-remove' | 'color-change' | 'pullup-banner' | 'media' | 'documents'
+
+// LocalStorage keys
+const STORAGE_KEYS = {
+  UPLOADED_MEDIA: 'beitha_uploaded_media',
+  UPLOADED_DOCUMENTS: 'beitha_uploaded_documents',
+  ADMIN_MODE: 'beitha_admin_mode',
+  USER_SESSION: 'beitha_user_session'
+}
+
 export default function Home() {
   const [uploadState, setUploadState] = useState<UploadState>({
     file: null,
@@ -21,6 +59,92 @@ export default function Home() {
     results: null,
     error: null
   })
+
+  // Chat state
+  const [isChatOpen, setIsChatOpen] = useState(false)
+
+  // Tool state
+  const [activeTool, setActiveTool] = useState<ActiveTool>('file-upload')
+
+  // Admin state
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [showAdminToggle, setShowAdminToggle] = useState(false)
+
+  // Media and documents state with persistence
+  const [uploadedMedia, setUploadedMedia] = useState<MediaItem[]>([])
+  const [uploadedDocuments, setUploadedDocuments] = useState<DocumentItem[]>([])
+
+  // Search and filter state
+  const [mediaSearchTerm, setMediaSearchTerm] = useState('')
+  const [documentSearchTerm, setDocumentSearchTerm] = useState('')
+  const [mediaFilter, setMediaFilter] = useState('all')
+  const [documentFilter, setDocumentFilter] = useState('all')
+
+  // Load persisted data on mount
+  useEffect(() => {
+    loadPersistedData()
+    checkAdminStatus()
+  }, [])
+
+  // Save data to localStorage whenever it changes
+  useEffect(() => {
+    savePersistedData()
+  }, [uploadedMedia, uploadedDocuments, isAdmin])
+
+  const loadPersistedData = () => {
+    try {
+      // Load media
+      const savedMedia = localStorage.getItem(STORAGE_KEYS.UPLOADED_MEDIA)
+      if (savedMedia) {
+        const parsedMedia = JSON.parse(savedMedia).map((item: any) => ({
+          ...item,
+          uploadDate: new Date(item.uploadDate),
+          uploadedAt: new Date(item.uploadedAt)
+        }))
+        setUploadedMedia(parsedMedia)
+      }
+
+      // Load documents
+      const savedDocuments = localStorage.getItem(STORAGE_KEYS.UPLOADED_DOCUMENTS)
+      if (savedDocuments) {
+        const parsedDocuments = JSON.parse(savedDocuments).map((item: any) => ({
+          ...item,
+          uploadedAt: new Date(item.uploadedAt)
+        }))
+        setUploadedDocuments(parsedDocuments)
+      }
+
+      // Load admin mode
+      const savedAdminMode = localStorage.getItem(STORAGE_KEYS.ADMIN_MODE)
+      if (savedAdminMode) {
+        setIsAdmin(JSON.parse(savedAdminMode))
+      }
+    } catch (error) {
+      console.error('Error loading persisted data:', error)
+    }
+  }
+
+  const savePersistedData = () => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.UPLOADED_MEDIA, JSON.stringify(uploadedMedia))
+      localStorage.setItem(STORAGE_KEYS.UPLOADED_DOCUMENTS, JSON.stringify(uploadedDocuments))
+      localStorage.setItem(STORAGE_KEYS.ADMIN_MODE, JSON.stringify(isAdmin))
+    } catch (error) {
+      console.error('Error saving persisted data:', error)
+    }
+  }
+
+  const checkAdminStatus = async () => {
+    try {
+      const response = await fetch('/api/admin/check')
+      if (response.ok) {
+        const data = await response.json()
+        setIsAdmin(data.isAdmin || false)
+      }
+    } catch (error) {
+      console.log('Admin check failed, using persisted admin mode')
+    }
+  }
 
   const handleFileSelect = async (file: File) => {
     setUploadState({
@@ -85,127 +209,521 @@ export default function Home() {
     })
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-black mb-4">
-          Welcome to Beith Digital Preflight Portal
-        </h1>
-        <p className="text-xl text-black max-w-3xl mx-auto">
-          Upload your artwork files and get instant validation against our print specifications. 
-          Ensure your designs are print-ready before production.
-        </p>
-      </div>
+  // Tool handlers
+  const handleBleedAddition = async (file: File, config: any) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('config', JSON.stringify(config))
+      
+      const response = await fetch('/api/add-bleed', {
+        method: 'POST',
+        body: formData
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to add bleed')
+      }
+      
+      const result = await response.json()
+      return result
+    } catch (error) {
+      console.error('Bleed addition error:', error)
+      throw error
+    }
+  }
 
-      <div className="max-w-4xl mx-auto">
-        {!uploadState.results ? (
+  const handleBleedRemoval = async (file: File) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/remove-bleed', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to remove bleed')
+      }
+
+      const result = await response.json()
+      return result
+    } catch (error) {
+      console.error('Bleed removal error:', error)
+      throw error
+    }
+  }
+
+  const handleColorChange = async (file: File, colorSettings: any) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('colorSettings', JSON.stringify(colorSettings))
+
+      const response = await fetch('/api/convert-outlines', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to change colors')
+      }
+
+      const result = await response.json()
+      return result
+    } catch (error) {
+      console.error('Color change error:', error)
+      throw error
+    }
+  }
+
+  const handleArtworkDrop = async (file: File) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/pullup-banner', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to process banner')
+      }
+
+      const result = await response.json()
+      return result
+    } catch (error) {
+      console.error('Banner processing error:', error)
+      throw error
+    }
+  }
+
+  // Media handlers with persistence
+  const handleMediaUpload = async (file: File, category: string = 'Images') => {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload-media', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to upload media')
+      }
+        
+      const result = await response.json()
+      const newMediaItem: MediaItem = {
+        id: result.id || `media_${Date.now()}`,
+          name: file.name,
+          type: file.type,
+        size: file.size,
+        url: result.url || URL.createObjectURL(file),
+          category,
+        uploadDate: new Date(),
+        uploadedAt: new Date()
+      }
+
+      setUploadedMedia(prev => [...prev, newMediaItem])
+      return result
+    } catch (error) {
+      console.error('Media upload error:', error)
+      // Even if API fails, save to localStorage for persistence
+      const newMediaItem: MediaItem = {
+        id: `local_media_${Date.now()}`,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        url: URL.createObjectURL(file),
+        category: category || 'Images',
+        uploadDate: new Date(),
+        uploadedAt: new Date()
+      }
+      setUploadedMedia(prev => [...prev, newMediaItem])
+    }
+  }
+
+  const handleMediaDelete = async (mediaId: string) => {
+    try {
+      const response = await fetch(`/api/delete-media/${mediaId}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete media')
+      }
+    } catch (error) {
+      console.error('Media deletion error:', error)
+    } finally {
+      setUploadedMedia(prev => prev.filter(item => item.id !== mediaId))
+    }
+  }
+
+  // Document handlers with persistence
+  const handleDocumentUpload = async (file: File) => {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload-document', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to upload document')
+      }
+        
+      const result = await response.json()
+      const newDocumentItem: DocumentItem = {
+        id: result.id || `doc_${Date.now()}`,
+          name: file.name,
+          type: file.type,
+        size: file.size,
+        url: result.url || URL.createObjectURL(file),
+        uploadedAt: new Date()
+      }
+
+      setUploadedDocuments(prev => [...prev, newDocumentItem])
+      return result
+    } catch (error) {
+      console.error('Document upload error:', error)
+      // Even if API fails, save to localStorage for persistence
+      const newDocumentItem: DocumentItem = {
+        id: `local_doc_${Date.now()}`,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        url: URL.createObjectURL(file),
+        uploadedAt: new Date()
+      }
+      setUploadedDocuments(prev => [...prev, newDocumentItem])
+    }
+  }
+
+  const handleDocumentDelete = async (documentId: string) => {
+    try {
+      const response = await fetch(`/api/delete-document/${documentId}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete document')
+      }
+    } catch (error) {
+      console.error('Document deletion error:', error)
+    } finally {
+      setUploadedDocuments(prev => prev.filter(item => item.id !== documentId))
+    }
+  }
+
+  const renderToolContent = () => {
+    switch (activeTool) {
+                  case 'file-upload':
+        return (
           <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-8">
             <div className="text-center mb-6">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-beith-blue-100 mb-4">
-                <svg className="h-6 w-6 text-beith-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-              </div>
               <h2 className="text-2xl font-semibold text-black mb-2">
-                Upload Your Artwork
+                File Upload & Analysis
               </h2>
               <p className="text-black">
-                Drag and drop your files here or click to browse
+                Use the upload section in the sidebar to upload your artwork files
               </p>
             </div>
+            
+            {uploadState.results ? (
+              <div className="space-y-8">
+                {/* Results Dashboard */}
+                <PreflightResults
+                  results={uploadState.results.validation.results}
+                  summary={uploadState.results.validation.summary}
+                  overall={uploadState.results.validation.overall}
+                  fileName={uploadState.file?.name || ''}
+                  fileSize={uploadState.file?.size || 0}
+                  metadata={uploadState.results.metadata}
+                  onRetry={handleRetry}
+                />
 
+                {/* Visual Preview */}
+                {uploadState.file && (
+                  <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
+                    <h3 className="text-xl font-semibold text-black mb-4">Artwork Preview</h3>
+                    <div className="flex justify-center">
+                      <VisualPreview file={uploadState.file} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Print Preview */}
+                {uploadState.results.metadata?.dimensions && (
+                  <PrintPreview
+                    artworkUrl={uploadState.file ? URL.createObjectURL(uploadState.file) : ''}
+                    dimensions={uploadState.results.metadata.dimensions}
+                    bleed={uploadState.results.metadata.hasBleed ? 3 : 0}
+                    liveArea={{ top: 5, right: 5, bottom: 5, left: 5 }}
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                <p>No file uploaded yet. Please use the upload section in the sidebar.</p>
+              </div>
+            )}
+          </div>
+        )
+      case 'bleed-add':
+        return <BleedAdderTool onBleedAddition={handleBleedAddition} isProcessing={uploadState.uploading} />
+      case 'bleed-remove':
+        return <BleedRemovalTool onBleedRemoval={handleBleedRemoval} isProcessing={uploadState.uploading} />
+      case 'color-change':
+        return <PDFColorChanger onColorChange={handleColorChange} isProcessing={uploadState.uploading} />
+      case 'pullup-banner':
+        return <PullUpBannerTool onArtworkDrop={handleArtworkDrop} isProcessing={uploadState.uploading} />
+      case 'media':
+        return (
+              <MediaGallery 
+                media={uploadedMedia} 
+                onMediaUpload={handleMediaUpload} 
+                onMediaDelete={handleMediaDelete} 
+                isAdmin={isAdmin} 
+              />
+        )
+      case 'documents':
+        return (
+          <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-semibold text-black">Documents</h2>
+              <div className="flex gap-2">
+                      <input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={documentSearchTerm}
+                  onChange={(e) => setDocumentSearchTerm(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-beith-blue-500"
+                />
+                <select
+                  value={documentFilter}
+                  onChange={(e) => setDocumentFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-beith-blue-500"
+                >
+                  <option value="all">All Types</option>
+                  <option value="pdf">PDF</option>
+                  <option value="doc">DOC</option>
+                  <option value="docx">DOCX</option>
+                </select>
+                    </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {uploadedDocuments
+                .filter(doc => 
+                  doc.name.toLowerCase().includes(documentSearchTerm.toLowerCase()) &&
+                  (documentFilter === 'all' || doc.type.includes(documentFilter))
+                )
+                .map(doc => (
+                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium text-black">{doc.name}</h3>
+                        <p className="text-sm text-gray-600">{doc.type}</p>
+                        <p className="text-sm text-gray-600">{(doc.size / 1024 / 1024).toFixed(2)} MB</p>
+                      </div>
+              <button
+                        onClick={() => handleDocumentDelete(doc.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                      </button>
+            </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar Navigation */}
+      <SidebarNavigation
+        activeTool={activeTool}
+        onToolChange={setActiveTool}
+        uploadSlot={activeTool === 'file-upload' && uploadState.file ? (
+          <div className="text-sm text-gray-600">
+            File: {uploadState.file.name}
+          </div>
+        ) : undefined}
+        fileUploader={
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-8 w-8 rounded-full bg-beith-blue-100 mb-3">
+              <svg className="h-4 w-4 text-beith-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-semibold text-black mb-2">
+              Upload Your Artwork
+            </h3>
+            <p className="text-xs text-gray-600 mb-3">
+              Drag and drop your files here or click to browse
+            </p>
             <FileUploader
               onFileSelect={handleFileSelect}
               onError={handleError}
               acceptedTypes={['pdf', 'ai', 'indd', 'psd', 'tiff', 'tif']}
             />
-
             {uploadState.error && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-xs">
                 <p className="text-red-700">{uploadState.error}</p>
               </div>
             )}
+          </div>
+        }
+      />
 
-            {uploadState.uploading && (
-              <div className="mt-4 text-center">
-                <div className="inline-flex items-center px-4 py-2 bg-beith-blue-100 text-beith-blue-700 rounded-lg">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Processing your artwork...
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header with Admin Toggle */}
+          <div className="text-center mb-12">
+            <div className="flex justify-between items-center mb-4">
+              <div></div>
+              <div className="flex items-center gap-4">
+                {isAdmin && (
+                  <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    Admin Mode
+                    </div>
+                  )}
+                <button
+                  onClick={() => setShowAdminToggle(!showAdminToggle)}
+                  className="text-gray-600 hover:text-gray-800 text-sm"
+                >
+                  {isAdmin ? '🔓' : '🔒'} Admin
+                </button>
+                  </div>
+            </div>
+            
+            {showAdminToggle && (
+              <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 mb-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Admin Mode:</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                      type="checkbox"
+                      checked={isAdmin}
+                      onChange={(e) => setIsAdmin(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                {isAdmin && (
+                  <p className="text-xs text-green-600 mt-2">
+                    ✓ Admin features enabled: File persistence, advanced uploads, media management
+                  </p>
+                  )}
                 </div>
-              </div>
             )}
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {/* Results Dashboard */}
-            <PreflightResults
-              results={uploadState.results.validation.results}
-              summary={uploadState.results.validation.summary}
-              overall={uploadState.results.validation.overall}
-              fileName={uploadState.file?.name || ''}
-              fileSize={uploadState.file?.size || 0}
-              metadata={uploadState.results.metadata}
-              onRetry={handleRetry}
-            />
 
-            {/* Visual Preview */}
-            {uploadState.file && (
-              <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
-                <h3 className="text-xl font-semibold text-black mb-4">Artwork Preview</h3>
-                <div className="flex justify-center">
-                  <VisualPreview file={uploadState.file} />
+            <h1 className="text-4xl font-bold text-black mb-4">
+              Welcome to Beith Digital Preflight Portal
+            </h1>
+            <p className="text-xl text-black max-w-3xl mx-auto">
+              Upload your artwork files and get instant validation against our print specifications. 
+              Ensure your designs are print-ready before production.
+            </p>
+                    </div>
+                
+          {/* Tool Content */}
+          <div className="max-w-4xl mx-auto">
+            {activeTool === 'file-upload' && uploadState.results ? (
+              <div className="space-y-8">
+                {/* Results Dashboard */}
+                <PreflightResults
+                  results={uploadState.results.validation.results}
+                  summary={uploadState.results.validation.summary}
+                  overall={uploadState.results.validation.overall}
+                  fileName={uploadState.file?.name || ''}
+                  fileSize={uploadState.file?.size || 0}
+                  metadata={uploadState.results.metadata}
+                  onRetry={handleRetry}
+                />
+
+                {/* Visual Preview */}
+                {uploadState.file && (
+                  <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
+                    <h3 className="text-xl font-semibold text-black mb-4">Artwork Preview</h3>
+                    <div className="flex justify-center">
+                      <VisualPreview file={uploadState.file} />
+                        </div>
+                      </div>
+                )}
+
+                {/* Print Preview */}
+                {uploadState.results.metadata?.dimensions && (
+                  <PrintPreview
+                    artworkUrl={uploadState.file ? URL.createObjectURL(uploadState.file) : ''}
+                    dimensions={uploadState.results.metadata.dimensions}
+                    bleed={uploadState.results.metadata.hasBleed ? 3 : 0}
+                    liveArea={{ top: 5, right: 5, bottom: 5, left: 5 }}
+                  />
+                )}
+                        </div>
+                ) : (
+              renderToolContent()
+            )}
+
+            {/* Features Grid */}
+            {activeTool === 'file-upload' && (
+              <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-beith-blue-100 mb-3">
+                    <svg className="h-5 w-5 text-beith-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                        </div>
+                  <h3 className="text-lg font-medium text-black">Instant Validation</h3>
+                  <p className="text-sm text-black">Get immediate feedback on your artwork specifications</p>
+                      </div>
+
+                <div className="text-center">
+                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-beith-blue-100 mb-3">
+                    <svg className="h-5 w-5 text-beith-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-black">Visual Preview</h3>
+                  <p className="text-sm text-black">See exactly how your artwork will print with guides</p>
+                          </div>
+
+                <div className="text-center">
+                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-beith-blue-100 mb-3">
+                    <svg className="h-5 w-5 text-beith-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                          </div>
+                  <h3 className="text-lg font-medium text-black">Smart Guidance</h3>
+                  <p className="text-sm text-black">Get step-by-step instructions to fix any issues</p>
+                        </div>
+                  </div>
+                )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* Print Preview */}
-            {uploadState.results.metadata?.dimensions && (
-              <PrintPreview
-                artworkUrl={uploadState.file ? URL.createObjectURL(uploadState.file) : ''}
-                dimensions={uploadState.results.metadata.dimensions}
-                bleed={uploadState.results.metadata.hasBleed ? 3 : 0}
-                liveArea={{ top: 5, right: 5, bottom: 5, left: 5 }}
-              />
-            )}
-          </div>
-        )}
-
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-beith-blue-100 mb-3">
-              <svg className="h-5 w-5 text-beith-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-black">Instant Validation</h3>
-            <p className="text-sm text-black">Get immediate feedback on your artwork specifications</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-beith-blue-100 mb-3">
-              <svg className="h-5 w-5 text-beith-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-black">Visual Preview</h3>
-            <p className="text-sm text-black">See exactly how your artwork will print with guides</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-beith-blue-100 mb-3">
-              <svg className="h-5 w-5 text-beith-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-black">Smart Guidance</h3>
-            <p className="text-sm text-black">Get step-by-step instructions to fix any issues</p>
-          </div>
-        </div>
-      </div>
+      {/* BEITHA Chatbot */}
+      <BEITHAChatbot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      
+      {/* Chat Button */}
+      <ChatButton onClick={() => setIsChatOpen(true)} isOpen={isChatOpen} />
     </div>
   )
 }

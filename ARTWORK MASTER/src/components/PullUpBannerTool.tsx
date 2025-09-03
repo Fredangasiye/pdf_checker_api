@@ -262,7 +262,7 @@ export default function PullUpBannerTool({ onArtworkDrop, isProcessing }: PullUp
       {/* Header */}
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-white mb-2">Pull-Up Banner Template Tool</h2>
-        <p className="text-gray-300">Drop your artwork into the 2050×850mm pull-up banner template to see how it will look</p>
+                    <p className="text-gray-700">Drop your artwork into the 2050×850mm pull-up banner template to see how it will look</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

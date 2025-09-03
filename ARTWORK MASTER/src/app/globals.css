@@ -1,36 +1,182 @@
+/* Minimal Professional Design */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import "tailwindcss";
 
+/* Futuristic header typography */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+.tech-title {
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #7dd3fc 0%, #60a5fa 35%, #22d3ee 70%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.12));
+}
+
+.tech-tagline {
+  font-family: 'Rajdhani', 'Inter', sans-serif;
+  letter-spacing: 0.16em;
+  color: #93c5fd;
+  text-transform: uppercase;
+  text-shadow: 0 0 1.5px rgba(59, 130, 246, 0.12);
+}
+
+.header-glow {
+  position: relative;
+}
+.header-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px -6px;
+  background: radial-gradient(45% 45% at 50% 45%, rgba(37, 99, 235, 0.08), rgba(6, 182, 212, 0.06), transparent 55%);
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* CSS Variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --beith-blue-primary: #2563eb;
-  --beith-red-accent: #dc2626;
+  --primary-gradient: linear-gradient(159deg, rgba(0,51,102,1) 0%, rgba(15,82,186,1) 100%);
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --text-primary: #1a202c;
+  --text-secondary: #2d3748;
+  --text-muted: #4a5568;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7fafc;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: 'Inter', system-ui, sans-serif;
+/* Base styles */
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-weight: 400;
   line-height: 1.6;
 }
 
-/* Custom scrollbar styling */
+/* Utility classes */
+.gradient-bg {
+  background: var(--bg-primary);
+}
+
+/* Minimal glassmorphism */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Professional button styles */
+.btn-modern {
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 51, 102, 0.2);
+}
+
+.btn-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
+}
+
+.btn-modern:active {
+  transform: translateY(0);
+}
+
+/* Clean typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+h1 { font-size: 2rem; font-weight: 700; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.125rem; }
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Minimal animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Clean form elements */
+input, textarea, select {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  color: var(--text-primary);
+  padding: 10px 14px;
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #4facfe;
+  box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+}
+
+/* Minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -38,10 +184,73 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: var(--primary-gradient);
+  border-radius: 3px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+/* Clean selection */
+::selection {
+  background: rgba(79, 172, 254, 0.2);
+  color: var(--text-primary);
 }
+
+/* Text gradient effect */
+.text-gradient {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Slide in animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+/* Professional navigation styles */
+.nav-button {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  background: #f7fafc;
+  color: var(--text-primary);
+}
+
+.nav-button.active {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: transparent;
+}
+
+/* Ethnocentric font (place files in public/fonts/) */
+@font-face {
+  font-family: 'Ethnocentric';
+  src: url('/fonts/Ethnocentric Rg.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-ethno {
+  font-family: 'Ethnocentric', 'Orbitron', 'Inter', sans-serif;
+  letter-spacing: 0.06em;
+}
+

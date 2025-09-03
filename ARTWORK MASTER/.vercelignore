@@ -1,0 +1,7 @@
+# Large directories that shouldn't be deployed
+outputs/
+uploads/
+SAMPLE FILES/
+node_modules/
+.next/
+*.log

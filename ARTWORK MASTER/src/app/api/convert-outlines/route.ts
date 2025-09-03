@@ -1,4 +1,4 @@
-// import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import fs from 'fs/promises'
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Return the converted PDF
-    return new Response(convertedPdfBytes, {
+    return new Response(new Uint8Array(convertedPdfBytes), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${fileName.replace('.pdf', '_outlined.pdf')}"`,
@@ -75,4 +75,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-} 
+}

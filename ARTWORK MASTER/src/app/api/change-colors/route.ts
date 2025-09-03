@@ -1,4 +1,4 @@
-// // import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir, readFile } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
@@ -6,14 +6,14 @@ import { spawn } from 'child_process'
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData()
-    const file = formData.get('file') as File
+    const formData = await request.formData() as any
+    const file = formData.get('file')
     const isAnalyze = formData.get('analyze') === 'true'
     
     if (isAnalyze) {
       // Handle color analysis request
       if (!file) {
-        return NextResponse.json({ error: 'No file provided for analysis' }), { 
+        return NextResponse.json({ error: 'No file provided for analysis' }, { 
           status: 400,
           headers: { 'Content-Type': 'application/json' }
         })
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         analyze_only: true
       }
 
-      return new Promise((resolve, reject) => {
+      return new Promise<Response>((resolve) => {
         const pythonProcess = spawn('python3', [pythonScript, JSON.stringify(config)])
         
         let stdout = ''
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
 
     console.log('Calling Python script with config:', config)
 
-    return new Promise((resolve, reject) => {
+    return new Promise<Response>((resolve) => {
       const pythonProcess = spawn('python3', [pythonScript, JSON.stringify(config)])
       
       let stdout = ''
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
                 const pdfBuffer = await readFile(outputPath)
                 
                 // Return the PDF file for download
-                const response = new Response(pdfBuffer, {
+                const response = new Response(new Uint8Array(pdfBuffer), {
                   status: 200,
                   headers: {
                     'Content-Type': 'application/pdf',
@@ -232,4 +232,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-} 
+}

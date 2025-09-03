@@ -24,10 +24,10 @@ export default function PrintPreview({
   const displayHeight = totalHeight * scale
 
   return (
-    <div className="flex flex-col items-center p-4 bg-beith-gray-100 rounded-lg">
-              <h3 className="text-lg font-semibold text-black mb-4">Print Preview</h3>
+    <div className="flex flex-col items-center p-4 bg-gray-800/60 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700/50">
+      <h3 className="text-lg font-semibold text-white mb-4">Print Preview</h3>
       
-      <div className="relative border-2 border-beith-gray-300 bg-white shadow-lg" 
+      <div className="relative border-2 border-gray-600 bg-gray-900 shadow-lg" 
            style={{ width: displayWidth, height: displayHeight }}>
         
         {/* Bleed area (outer) */}
@@ -71,20 +71,20 @@ export default function PrintPreview({
       {/* Legend */}
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 border-2 border-red-400 border-dashed bg-red-50"></div>
-          <span>Bleed ({bleed}mm)</span>
+          <div className="w-4 h-4 border-2 border-red-400 border-dashed bg-red-900/30"></div>
+          <span className="text-gray-300">Bleed ({bleed}mm)</span>
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-4 h-4 border border-red-600"></div>
-          <span>Trim line</span>
+          <span className="text-gray-300">Trim line</span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 border-2 border-blue-500 border-dashed bg-blue-50"></div>
-          <span>Live area</span>
+          <div className="w-4 h-4 border-2 border-blue-500 border-dashed bg-blue-900/30"></div>
+          <span className="text-gray-300">Live area</span>
         </div>
       </div>
       
-                  <div className="mt-2 text-xs text-black">
+      <div className="mt-2 text-xs text-gray-400">
         Dimensions: {dimensions.width}mm × {dimensions.height}mm | Scale: {scale * 100}%
       </div>
     </div>

@@ -102,7 +102,7 @@ export default function PDFColorChanger({ onColorChange, isProcessing }: PDFColo
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-white mb-2">PDF Color Changer</h2>
-          <p className="text-gray-300">
+          <p className="text-gray-600">
             Intelligently find and replace colors in your PDF files
           </p>
         </div>
@@ -121,9 +121,9 @@ export default function PDFColorChanger({ onColorChange, isProcessing }: PDFColo
             />
             {selectedFile && (
               <div className="flex items-center gap-4">
-                <p className="text-sm text-gray-400">
-                  Selected: {selectedFile.name}
-                </p>
+                            <p className="text-sm text-gray-600">
+              Selected: {selectedFile.name}
+            </p>
                 <button
                   type="button"
                   onClick={handleAnalyzeColors}
@@ -155,7 +155,7 @@ export default function PDFColorChanger({ onColorChange, isProcessing }: PDFColo
                           {color.color_name !== "Custom" ? color.color_name : "Custom Color"}
                         </div>
                         {color.color_name !== "Custom" && (
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-gray-600">
                             Standard color match
                           </div>
                         )}
@@ -164,26 +164,26 @@ export default function PDFColorChanger({ onColorChange, isProcessing }: PDFColo
                     
                     {/* Actual Detected Values */}
                     <div className="mb-3">
-                      <div className="text-xs text-gray-400 mb-2">Actual Detected Values:</div>
+                      <div className="text-xs text-gray-600 mb-2">Actual Detected Values:</div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="text-gray-300">
-                          <span className="text-gray-400">RGB:</span> {Math.round(color.rgb[0] * 255)}, {Math.round(color.rgb[1] * 255)}, {Math.round(color.rgb[2] * 255)}
+                        <div className="text-gray-700">
+                          <span className="text-gray-600">RGB:</span> {Math.round(color.rgb[0] * 255)}, {Math.round(color.rgb[1] * 255)}, {Math.round(color.rgb[2] * 255)}
                         </div>
-                        <div className="text-gray-300">
-                          <span className="text-gray-400">CMYK:</span> {Math.round(color.cmyk[0])}, {Math.round(color.cmyk[1])}, {Math.round(color.cmyk[2])}, {Math.round(color.cmyk[3])}
+                        <div className="text-gray-700">
+                          <span className="text-gray-600">CMYK:</span> {Math.round(color.cmyk[0])}, {Math.round(color.cmyk[1])}, {Math.round(color.cmyk[2])}, {Math.round(color.cmyk[3])}
                         </div>
                       </div>
                     </div>
                     
                     {/* Standardized Values */}
                     <div className="mb-3">
-                      <div className="text-xs text-gray-400 mb-2">Standardized (Illustrator Match):</div>
+                      <div className="text-xs text-gray-600 mb-2">Standardized (Illustrator Match):</div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="text-gray-300">
-                          <span className="text-gray-400">RGB:</span> {color.standardized_rgb[0]}, {color.standardized_rgb[1]}, {color.standardized_rgb[2]}
+                        <div className="text-gray-700">
+                          <span className="text-gray-600">RGB:</span> {color.standardized_rgb[0]}, {color.standardized_rgb[1]}, {color.standardized_rgb[2]}
                         </div>
-                        <div className="text-gray-300">
-                          <span className="text-gray-400">CMYK:</span> {color.standardized_cmyk[0]}, {color.standardized_cmyk[1]}, {color.standardized_cmyk[2]}, {color.standardized_cmyk[3]}
+                        <div className="text-gray-700">
+                          <span className="text-gray-600">CMYK:</span> {color.standardized_cmyk[0]}, {color.standardized_cmyk[1]}, {color.standardized_cmyk[2]}, {color.standardized_cmyk[3]}
                         </div>
                       </div>
                     </div>
@@ -235,7 +235,7 @@ export default function PDFColorChanger({ onColorChange, isProcessing }: PDFColo
               min="0"
               className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400"
             />
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-600">
               For finding CMYK colors. Lower is stricter. Increase if colors aren't found.
             </p>
           </div>
@@ -254,17 +254,17 @@ export default function PDFColorChanger({ onColorChange, isProcessing }: PDFColo
                     value={pair.oldColor}
                     onChange={(e) => updateColorPair(index, 'oldColor', e.target.value)}
                     placeholder="Old Color (e.g., 100,0,0,0)"
-                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-md text-white placeholder-gray-400"
+                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-md text-white placeholder-gray-500"
                   />
                   <div className="text-center">
-                    <span className="text-sm text-gray-400">to</span>
+                    <span className="text-sm text-gray-600">to</span>
                   </div>
                   <input
                     type="text"
                     value={pair.newColor}
                     onChange={(e) => updateColorPair(index, 'newColor', e.target.value)}
                     placeholder="New Color (e.g., 0,100,0,0)"
-                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-md text-white placeholder-gray-400"
+                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-md text-white placeholder-gray-500"
                   />
                 </div>
                 {colorPairs.length > 1 && (

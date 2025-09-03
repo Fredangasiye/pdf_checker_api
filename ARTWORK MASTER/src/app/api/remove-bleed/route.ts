@@ -1,8 +1,8 @@
-// import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir, readFile } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
-import { PDFDocument, PDFPage } from 'pdf-lib'
+import { PDFDocument } from 'pdf-lib'
 
 interface BleedRemovalConfig {
   removeTop: boolean
@@ -14,8 +14,8 @@ interface BleedRemovalConfig {
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData()
-    const file = formData.get('file') as File
+    const formData = await request.formData() as any
+    const file = formData.get('file')
     const removeTop = formData.get('removeTop') === 'true'
     const removeRight = formData.get('removeRight') === 'true'
     const removeBottom = formData.get('removeBottom') === 'true'
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       const pdfBuffer = await readFile(outputPath)
       
       // Return the PDF file for download
-      const response = new Response(pdfBuffer, {
+      const response = new Response(new Uint8Array(pdfBuffer), {
         status: 200,
         headers: {
           'Content-Type': 'application/pdf',
@@ -160,4 +160,4 @@ async function removeBleedFromPDF(
       error: error instanceof Error ? error.message : 'Unknown error occurred' 
     }
   }
-} 
+}

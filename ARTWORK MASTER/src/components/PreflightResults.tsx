@@ -10,7 +10,7 @@ interface PreflightResultsProps {
     failed: number
     warnings: number
   }
-  overall: boolean
+  overall: string
   fileName: string
   fileSize: number
   metadata?: any
@@ -29,20 +29,20 @@ export default function PreflightResults({
   onDownload
 }: PreflightResultsProps) {
   const getStatusColor = () => {
-    if (overall) return 'bg-green-100 text-green-800 border-green-200'
-    if (summary.failed > 0) return 'bg-red-100 text-red-800 border-red-200'
+    if (overall === 'pass') return 'bg-green-100 text-green-800 border-green-200'
+    if (overall === 'fail') return 'bg-red-100 text-red-800 border-red-200'
     return 'bg-yellow-100 text-yellow-800 border-yellow-200'
   }
 
   const getStatusIcon = () => {
-    if (overall) {
+    if (overall === 'pass') {
       return (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
       )
     }
-    if (summary.failed > 0) {
+    if (overall === 'fail') {
       return (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -57,8 +57,8 @@ export default function PreflightResults({
   }
 
   const getStatusText = () => {
-    if (overall) return 'Print Ready'
-    if (summary.failed > 0) return 'Corrections Needed'
+    if (overall === 'pass') return 'Print Ready'
+    if (overall === 'fail') return 'Corrections Needed'
     return 'Review Required'
   }
 
@@ -97,12 +97,12 @@ export default function PreflightResults({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+    <div className="bg-gray-900/70 rounded-2xl backdrop-blur-sm border border-[var(--accent-neon)] p-6 max-w-4xl mx-auto transition-shadow shadow-[0_0_10px_var(--accent-neon)] hover:shadow-[0_0_20px_var(--accent-neon)]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-                  <h2 className="text-2xl font-bold text-black">Preflight Results</h2>
-        <p className="text-black mt-1">
+          <h2 className="text-2xl font-bold text-white">Preflight Results</h2>
+          <p className="text-gray-700 mt-1">
             {fileName} ({(fileSize / 1024 / 1024).toFixed(1)}MB)
           </p>
         </div>
@@ -114,33 +114,33 @@ export default function PreflightResults({
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-          <div className="text-2xl font-bold text-green-600">{summary.passed}</div>
-          <div className="text-sm text-green-700">Passed</div>
+        <div className="bg-gray-800/50 border border-[var(--accent-neon)] rounded-lg p-4 text-center backdrop-blur-sm">
+          <div className="text-2xl font-bold text-green-400">{summary.passed}</div>
+          <div className="text-sm text-green-300">Passed</div>
         </div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-          <div className="text-2xl font-bold text-red-600">{summary.failed}</div>
-          <div className="text-sm text-red-700">Failed</div>
+        <div className="bg-gray-800/50 border border-[var(--accent-neon)] rounded-lg p-4 text-center backdrop-blur-sm">
+          <div className="text-2xl font-bold text-red-400">{summary.failed}</div>
+          <div className="text-sm text-red-300">Failed</div>
         </div>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-          <div className="text-2xl font-bold text-yellow-600">{summary.warnings}</div>
-          <div className="text-sm text-yellow-700">Warnings</div>
+        <div className="bg-gray-800/50 border border-[var(--accent-neon)] rounded-lg p-4 text-center backdrop-blur-sm">
+          <div className="text-2xl font-bold text-yellow-400">{summary.warnings}</div>
+          <div className="text-sm text-yellow-300">Warnings</div>
         </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-          <div className="text-2xl font-bold text-blue-600">{Object.keys(results).length}</div>
-          <div className="text-sm text-blue-700">Total Checks</div>
+        <div className="bg-gray-800/50 border border-[var(--accent-neon)] rounded-lg p-4 text-center backdrop-blur-sm">
+          <div className="text-2xl font-bold text-blue-400">{Object.keys(results).length}</div>
+          <div className="text-sm text-blue-300">Total Checks</div>
         </div>
       </div>
 
       {/* File Metadata */}
       {metadata && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-black mb-2">File Information</h3>
+        <div className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 mb-6 backdrop-blur-sm">
+          <h3 className="font-semibold text-white mb-2">File Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             {metadata.dimensions && (
               <div>
-                <span className="font-medium text-black">Finished Size:</span>
-                <span className="ml-2 text-black">
+                <span className="font-medium text-gray-700">Finished Size:</span>
+                <span className="ml-2 text-white">
                   {metadata.hasBleed 
                     ? `${metadata.dimensions.height - 6}mm x ${metadata.dimensions.width - 6}mm (trim size)`
                     : `${metadata.dimensions.height}mm x ${metadata.dimensions.width}mm`
@@ -149,39 +149,43 @@ export default function PreflightResults({
               </div>
             )}
             <div>
-              <span className="font-medium text-black">File Size:</span>
-              <span className="ml-2 text-black">
+                              <span className="font-medium text-gray-700">File Size:</span>
+              <span className="ml-2 text-white">
                 {(fileSize / 1024 / 1024).toFixed(2)} MB
               </span>
             </div>
             {metadata.resolution && (
               <div>
-                <span className="font-medium text-black">Resolution:</span>
-                <span className="ml-2 text-black">{metadata.resolution} DPI</span>
+                <span className="font-medium text-gray-700">Resolution:</span>
+                <span className="ml-2 text-white">{metadata.resolution} DPI</span>
               </div>
             )}
             {metadata.colorSpace && (
               <div>
-                <span className="font-medium text-black">Color Space:</span>
-                <span className="ml-2 text-black">{metadata.colorSpace}</span>
+                <span className="font-medium text-gray-700">Color Space:</span>
+                <span className="ml-2 text-white">{metadata.colorSpace}</span>
               </div>
             )}
             <div>
-              <span className="font-medium text-black">Bleed:</span>
-              <span className="ml-2 text-black">
+                              <span className="font-medium text-gray-700">Bleed:</span>
+              <span className="ml-2 text-white">
                 {metadata.hasBleed ? '3mm (Configured)' : 'Not configured'}
               </span>
             </div>
             {metadata.spotColors && metadata.spotColors.length > 0 && (
               <div>
-                <span className="font-medium text-black">Spot Colors:</span>
-                <span className="ml-2 text-black">{metadata.spotColors.length} detected</span>
+                <span className="font-medium text-gray-700">Spot Colors:</span>
+                <span className="ml-2 text-white">
+                  {metadata.spotColors.join(', ')}
+                </span>
               </div>
             )}
             {metadata.fonts && metadata.fonts.length > 0 && (
               <div>
-                <span className="font-medium text-black">Fonts:</span>
-                <span className="ml-2 text-black">{metadata.fonts.length} detected</span>
+                <span className="font-medium text-gray-700">Fonts:</span>
+                <span className="ml-2 text-white">
+                  {metadata.fonts.join(', ')}
+                </span>
               </div>
             )}
           </div>
@@ -190,14 +194,14 @@ export default function PreflightResults({
 
       {/* Validation Results */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-black">Validation Details</h3>
+        <h3 className="font-semibold text-white">Validation Details</h3>
         {Object.entries(results).map(([ruleName, result]) => (
           <div
             key={ruleName}
-            className={`border rounded-lg p-4 ${
+            className={`border rounded-lg p-4 backdrop-blur-sm ${
               result.passed 
-                ? 'bg-green-50 border-green-200' 
-                : 'bg-red-50 border-red-200'
+                ? 'bg-green-900/20 border-green-700/50' 
+                : 'bg-red-900/20 border-red-700/50'
             }`}
           >
             <div className="flex items-start justify-between">
@@ -208,38 +212,38 @@ export default function PreflightResults({
                 </div>
                 <div className="flex items-center space-x-2">
                   {result.passed ? (
-                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   ) : (
-                    <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   )}
-                  <span className={`font-medium ${result.passed ? 'text-green-800' : 'text-red-800'}`}>
+                  <span className={`font-medium ${result.passed ? 'text-green-300' : 'text-red-300'}`}>
                     {result.passed ? 'Passed' : 'Failed'}
                   </span>
                 </div>
               </div>
             </div>
             
-            <p className={`mt-2 ${result.passed ? 'text-green-800' : 'text-red-800'}`}>
+            <p className={`mt-2 ${result.passed ? 'text-green-300' : 'text-red-300'}`}>
               {result.message}
             </p>
 
             {result.details && (
-              <div className="mt-3 p-3 bg-white rounded border">
-                <h4 className="text-sm font-medium text-black mb-2">Details</h4>
+              <div className="mt-3 p-3 bg-gray-700/30 rounded border border-gray-600/50 backdrop-blur-sm">
+                <h4 className="text-sm font-medium text-white mb-2">Details</h4>
                 {result.details.recommendation && (
                   <div className="mb-2">
-                    <span className="text-sm font-medium text-black">Recommendation:</span>
-                    <p className="text-sm text-black mt-1">{result.details.recommendation}</p>
+                    <span className="text-sm font-medium text-gray-300">Recommendation:</span>
+                    <p className="text-sm text-white mt-1">{result.details.recommendation}</p>
                   </div>
                 )}
                 {result.details.examples && (
                   <div>
-                    <span className="text-sm font-medium text-black">Examples:</span>
-                    <ul className="text-sm text-black mt-1 space-y-1">
+                    <span className="text-sm font-medium text-gray-300">Examples:</span>
+                    <ul className="text-sm text-white mt-1 space-y-1">
                       {Object.entries(result.details.examples).map(([key, value]) => (
                         <li key={key}>
                           <span className="font-medium">{key}:</span> {value as string}
@@ -250,10 +254,20 @@ export default function PreflightResults({
                 )}
                 {result.details.fonts && (
                   <div>
-                    <span className="text-sm font-medium text-black">Fonts:</span>
-                    <ul className="text-sm text-black mt-1">
+                    <span className="text-sm font-medium text-gray-300">Fonts:</span>
+                    <ul className="text-sm text-white mt-1">
                       {result.details.fonts.map((font: string, index: number) => (
                         <li key={index}>• {font}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {result.details.spotColors && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-300">Spot Colors:</span>
+                    <ul className="text-sm text-white mt-1">
+                      {result.details.spotColors.map((color: string, index: number) => (
+                        <li key={index}>• {color}</li>
                       ))}
                     </ul>
                   </div>
@@ -265,12 +279,12 @@ export default function PreflightResults({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between mt-8 pt-6 border-t border-beith-gray-200">
+      <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-600/50">
         <div className="flex space-x-3">
           {onRetry && (
             <button
               onClick={onRetry}
-              className="px-4 py-2 text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 text-white bg-gray-700/50 border border-gray-600/50 rounded-lg hover:bg-gray-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm transition-all duration-200"
             >
               Upload New File
             </button>
@@ -278,17 +292,17 @@ export default function PreflightResults({
         </div>
         
         <div className="flex space-x-3">
-          {overall && onDownload && (
+          {overall === 'pass' && onDownload && (
             <button
               onClick={onDownload}
-              className="px-6 py-2 bg-beith-blue-600 text-white rounded-lg hover:bg-beith-blue-700 focus:outline-none focus:ring-2 focus:ring-beith-blue-500"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
             >
               Download Report
             </button>
           )}
           <button
             onClick={() => window.print()}
-                          className="px-4 py-2 text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 text-white bg-gray-700/50 border border-gray-600/50 rounded-lg hover:bg-gray-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm transition-all duration-200"
           >
             Print Results
           </button>
