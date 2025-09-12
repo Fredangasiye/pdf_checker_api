@@ -586,52 +586,15 @@ export default function Home() {
             )}
           </div>
         }
+        isAdmin={isAdmin}
+        onAdminChange={(next) => setIsAdmin(next)}
       />
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Header with Admin Toggle */}
+          {/* Header */}
           <div className="text-center mb-12">
-            <div className="flex justify-between items-center mb-4">
-              <div></div>
-              <div className="flex items-center gap-4">
-                {isAdmin && (
-                  <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Admin Mode
-                    </div>
-                  )}
-                <button
-                  onClick={() => setShowAdminToggle(!showAdminToggle)}
-                  className="text-gray-600 hover:text-gray-800 text-sm"
-                >
-                  {isAdmin ? '🔓' : '🔒'} Admin
-                </button>
-                  </div>
-            </div>
-            
-            {showAdminToggle && (
-              <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 mb-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Admin Mode:</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                      type="checkbox"
-                      checked={isAdmin}
-                      onChange={(e) => setIsAdmin(e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      </label>
-                    </div>
-                {isAdmin && (
-                  <p className="text-xs text-green-600 mt-2">
-                    ✓ Admin features enabled: File persistence, advanced uploads, media management
-                  </p>
-                  )}
-                </div>
-            )}
-
             <h1 className="text-4xl font-bold text-black mb-4">
               Welcome to Beith Digital Preflight Portal
             </h1>
@@ -639,7 +602,7 @@ export default function Home() {
               Upload your artwork files and get instant validation against our print specifications. 
               Ensure your designs are print-ready before production.
             </p>
-                    </div>
+          </div>
                 
           {/* Tool Content */}
           <div className="max-w-4xl mx-auto">
