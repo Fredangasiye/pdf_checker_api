@@ -25,6 +25,7 @@ export interface ProcessingResult {
     resolution?: number
     colorSpace?: string
     hasBleed?: boolean
+    bleedMeasurements?: { top: number; right: number; bottom: number; left: number }
     hasLiveArea?: boolean
     fonts?: string[]
     spotColors?: string[]
@@ -304,14 +305,15 @@ export class FileProcessor {
       const spotColors = await this.detectPDFSpotColors(pdfDoc)
       
       // Check for bleed and live area
-      const hasBleed = await this.checkPDFBleed(pdfDoc)
+      const bleedInfo = await this.checkPDFBleed(pdfDoc)
       const hasLiveArea = await this.checkPDFLiveArea(pdfDoc)
       
       return {
         dimensions: { width: widthMm, height: heightMm },
         resolution: 300, // PDFs are typically 300 DPI for print
         colorSpace,
-        hasBleed,
+        hasBleed: bleedInfo.hasBleed,
+        bleedMeasurements: bleedInfo.measurements,
         hasLiveArea,
         fonts: await this.extractPDFFonts(pdfDoc),
         spotColors,
@@ -339,10 +341,10 @@ export class FileProcessor {
     }
   }
 
-  private async checkPDFBleed(pdfDoc: PDFDocument): Promise<boolean> {
+  private async checkPDFBleed(pdfDoc: PDFDocument): Promise<{ hasBleed: boolean; measurements: { top: number; right: number; bottom: number; left: number } }> {
     try {
       const pages = pdfDoc.getPages()
-      if (pages.length === 0) return false
+      if (pages.length === 0) return { hasBleed: false, measurements: { top: 0, right: 0, bottom: 0, left: 0 } }
       
       const firstPage = pages[0]
       const { width, height } = firstPage.getSize()
@@ -372,7 +374,21 @@ export class FileProcessor {
               const heightDiff = mediaHeight - cropHeight
               
               if (widthDiff > 3 || heightDiff > 3) {
-                return true
+                // Calculate bleed measurements
+                const bleedTop = Math.max(0, heightDiff / 2)
+                const bleedBottom = Math.max(0, heightDiff / 2)
+                const bleedLeft = Math.max(0, widthDiff / 2)
+                const bleedRight = Math.max(0, widthDiff / 2)
+                
+                return {
+                  hasBleed: true,
+                  measurements: {
+                    top: Math.round(bleedTop * 10) / 10,
+                    right: Math.round(bleedRight * 10) / 10,
+                    bottom: Math.round(bleedBottom * 10) / 10,
+                    left: Math.round(bleedLeft * 10) / 10
+                  }
+                }
               }
             }
           }
@@ -406,7 +422,11 @@ export class FileProcessor {
         )
         
         if (hasBleedContent) {
-          return true
+          // If we detect bleed content but can't measure it, assume standard 3mm bleed
+          return {
+            hasBleed: true,
+            measurements: { top: 3, right: 3, bottom: 3, left: 3 }
+          }
         }
       } catch (error) {
         console.warn('Could not analyze PDF content for bleed indicators:', error)
@@ -428,18 +448,46 @@ export class FileProcessor {
         { name: 'Tabloid', width: 279, height: 432 }
       ]
       
-      // Check if dimensions are close to standard but slightly larger
-      const hasBleedDimensions = standardSizes.some(size => {
+      // Find the closest standard size and calculate bleed
+      let closestSize = null
+      let minDiff = Infinity
+      
+      for (const size of standardSizes) {
         const widthDiff = Math.abs(widthMm - size.width)
         const heightDiff = Math.abs(heightMm - size.height)
-        // If dimensions are close to standard size but larger, likely has bleed
-        return (widthDiff <= 15 && heightDiff <= 15) && (widthMm > size.width || heightMm > size.height)
-      })
+        const totalDiff = widthDiff + heightDiff
+        
+        if (totalDiff < minDiff) {
+          minDiff = totalDiff
+          closestSize = size
+        }
+      }
       
-      return hasBleedDimensions
+      if (closestSize && minDiff <= 30) {
+        // Calculate bleed measurements
+        const widthBleed = Math.max(0, widthMm - closestSize.width)
+        const heightBleed = Math.max(0, heightMm - closestSize.height)
+        
+        // Assume symmetric bleed distribution
+        const bleedAmount = Math.min(widthBleed / 2, heightBleed / 2)
+        
+        if (bleedAmount > 0.5) { // Only consider it bleed if more than 0.5mm
+          return {
+            hasBleed: true,
+            measurements: {
+              top: Math.round(bleedAmount * 10) / 10,
+              right: Math.round(bleedAmount * 10) / 10,
+              bottom: Math.round(bleedAmount * 10) / 10,
+              left: Math.round(bleedAmount * 10) / 10
+            }
+          }
+        }
+      }
+      
+      return { hasBleed: false, measurements: { top: 0, right: 0, bottom: 0, left: 0 } }
     } catch (error) {
       console.error('Error checking PDF bleed:', error)
-      return false
+      return { hasBleed: false, measurements: { top: 0, right: 0, bottom: 0, left: 0 } }
     }
   }
 

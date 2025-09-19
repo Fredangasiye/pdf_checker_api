@@ -5,6 +5,7 @@ export interface FileMetadata {
   resolution?: number
   colorSpace?: string
   hasBleed?: boolean
+  bleedMeasurements?: { top: number; right: number; bottom: number; left: number }
   hasLiveArea?: boolean
   fonts?: string[]
   spotColors?: string[]
@@ -110,14 +111,15 @@ export class BrowserFileAnalyzer {
       const colorSpace = await this.detectPDFColorSpace(pdfDoc, file)
       console.log('Detected color space:', colorSpace)
       
-      // Check for bleed
-      const hasBleed = this.checkForBleed(widthMm, heightMm)
+      // Check for bleed and get measurements
+      const bleedInfo = this.checkForBleed(widthMm, heightMm)
       
       return {
         dimensions: { width: widthMm, height: heightMm },
         resolution: 300, // PDFs are typically 300 DPI for print
         colorSpace,
-        hasBleed,
+        hasBleed: bleedInfo.hasBleed,
+        bleedMeasurements: bleedInfo.measurements,
         hasLiveArea: widthMm > 50 && heightMm > 50,
         fonts,
         spotColors,
@@ -551,7 +553,7 @@ export class BrowserFileAnalyzer {
     }
   }
 
-  private checkForBleed(widthMm: number, heightMm: number): boolean {
+  private checkForBleed(widthMm: number, heightMm: number): { hasBleed: boolean; measurements: { top: number; right: number; bottom: number; left: number } } {
     // Check if dimensions suggest bleed (if the image is larger than typical print sizes)
     const standardSizes = [
       { name: 'A4', width: 210, height: 297 },
@@ -564,14 +566,45 @@ export class BrowserFileAnalyzer {
       { name: 'Tabloid', width: 279, height: 432 }
     ]
     
-    // Check if dimensions are close to standard but slightly larger
-    const hasBleedDimensions = standardSizes.some(size => {
+    // Find the closest standard size
+    let closestSize = null
+    let minDiff = Infinity
+    
+    for (const size of standardSizes) {
       const widthDiff = Math.abs(widthMm - size.width)
       const heightDiff = Math.abs(heightMm - size.height)
-      // If dimensions are close to standard size but larger, likely has bleed
-      return (widthDiff <= 15 && heightDiff <= 15) && (widthMm > size.width || heightMm > size.height)
-    })
+      const totalDiff = widthDiff + heightDiff
+      
+      if (totalDiff < minDiff) {
+        minDiff = totalDiff
+        closestSize = size
+      }
+    }
     
-    return hasBleedDimensions
+    if (closestSize && minDiff <= 30) {
+      // Calculate bleed measurements
+      const widthBleed = Math.max(0, widthMm - closestSize.width)
+      const heightBleed = Math.max(0, heightMm - closestSize.height)
+      
+      // Assume symmetric bleed distribution
+      const bleedAmount = Math.min(widthBleed / 2, heightBleed / 2)
+      
+      if (bleedAmount > 0.5) { // Only consider it bleed if more than 0.5mm
+        return {
+          hasBleed: true,
+          measurements: {
+            top: Math.round(bleedAmount * 10) / 10,
+            right: Math.round(bleedAmount * 10) / 10,
+            bottom: Math.round(bleedAmount * 10) / 10,
+            left: Math.round(bleedAmount * 10) / 10
+          }
+        }
+      }
+    }
+    
+    return {
+      hasBleed: false,
+      measurements: { top: 0, right: 0, bottom: 0, left: 0 }
+    }
   }
 } 

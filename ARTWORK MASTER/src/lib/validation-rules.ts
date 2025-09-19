@@ -19,6 +19,7 @@ export interface ArtworkMetadata {
   resolution?: number
   colorSpace?: string
   hasBleed?: boolean
+  bleedMeasurements?: { top: number; right: number; bottom: number; left: number }
   hasLiveArea?: boolean
   fonts?: string[]
   spotColors?: string[]
@@ -150,9 +151,24 @@ export const bleedRule: ValidationRule = {
     }
     
     if (metadata.hasBleed) {
-      return {
-        passed: true,
-        message: 'Bleed settings are properly configured'
+      const measurements = metadata.bleedMeasurements
+      if (measurements) {
+        const bleedText = `Top: ${measurements.top}mm, Right: ${measurements.right}mm, Bottom: ${measurements.bottom}mm, Left: ${measurements.left}mm`
+        return {
+          passed: true,
+          message: `Bleed detected: ${bleedText}`,
+          details: {
+            measurements: measurements,
+            recommendation: measurements.top >= 3 && measurements.right >= 3 && measurements.bottom >= 3 && measurements.left >= 3 
+              ? 'Bleed measurements meet standard requirements (3mm minimum)'
+              : 'Consider increasing bleed to 3mm minimum on all sides for better print results'
+          }
+        }
+      } else {
+        return {
+          passed: true,
+          message: 'Bleed settings are properly configured'
+        }
       }
     }
     
