@@ -10,7 +10,7 @@ export default function RootLayout({
         <header className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 py-6 flex items-center header-glow">
             {/* BEITH Logo */}
-            <div className="flex-shrink-0 flex items-center space-x-4">
+            <div className="flex-shrink-0 flex items-center space-x-2">
                       <div className="flex items-center">
           <span className="text-white font-bold text-5xl tracking-widest" style={{ fontFamily: 'Bahnschrift, sans-serif' }}>B</span>
           <span className="text-white font-bold text-5xl tracking-widest" style={{ fontFamily: 'Bahnschrift, sans-serif' }}>E</span>
@@ -18,7 +18,7 @@ export default function RootLayout({
           <span className="text-white font-bold text-5xl tracking-widest" style={{ fontFamily: 'Bahnschrift, sans-serif' }}>T</span>
           <span className="text-white font-bold text-5xl tracking-widest" style={{ fontFamily: 'Bahnschrift, sans-serif' }}>H</span>
         </div>
-              <div className="ml-6 border-l-2 border-blue-300/40 pl-4">
+              <div className="ml-3 border-l-2 border-blue-300/40 pl-3">
                 <div className="text-blue-300/80 text-[10px] font-semibold leading-tight tracking-[0.25em] uppercase">
                   <div>Creating</div>
                   <div>Visual</div>
