@@ -254,3 +254,27 @@ input:focus, textarea:focus, select:focus {
   letter-spacing: 0.06em;
 }
 
+/* 3D BEITH Logo Animations */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.hover\:rotate-y-12:hover {
+  transform: rotateY(12deg) scale(1.1);
+}
+
+.transform-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotateY(0deg); }
+  50% { transform: translateY(-10px) rotateY(5deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+

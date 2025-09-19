@@ -472,8 +472,43 @@ export default function Home() {
 
               </div>
             ) : (
-              <div className="text-center text-gray-500">
-                <p className="text-xs">No file uploaded yet.</p>
+              <div className="text-center">
+                {/* Animated 3D BEITH Logo */}
+                <div className="relative mb-8">
+                  <div className="flex justify-center items-center space-x-1 perspective-1000">
+                    <span className="text-6xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:text-blue-400 cursor-pointer animate-pulse" 
+                          style={{ 
+                            fontFamily: 'Bahnschrift, sans-serif',
+                            textShadow: '0 4px 8px rgba(59,130,246,0.3), 0 8px 16px rgba(59,130,246,0.2)',
+                            transformStyle: 'preserve-3d'
+                          }}>B</span>
+                    <span className="text-6xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:text-blue-400 cursor-pointer animate-pulse" 
+                          style={{ 
+                            fontFamily: 'Bahnschrift, sans-serif',
+                            textShadow: '0 4px 8px rgba(59,130,246,0.3), 0 8px 16px rgba(59,130,246,0.2)',
+                            transformStyle: 'preserve-3d'
+                          }}>E</span>
+                    <span className="text-6xl font-bold text-blue-600 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:text-blue-500 cursor-pointer animate-pulse" 
+                          style={{ 
+                            fontFamily: 'Bahnschrift, sans-serif',
+                            textShadow: '0 4px 8px rgba(59,130,246,0.4), 0 8px 16px rgba(59,130,246,0.3)',
+                            transformStyle: 'preserve-3d'
+                          }}>I</span>
+                    <span className="text-6xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:text-blue-400 cursor-pointer animate-pulse" 
+                          style={{ 
+                            fontFamily: 'Bahnschrift, sans-serif',
+                            textShadow: '0 4px 8px rgba(59,130,246,0.3), 0 8px 16px rgba(59,130,246,0.2)',
+                            transformStyle: 'preserve-3d'
+                          }}>T</span>
+                    <span className="text-6xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:text-blue-400 cursor-pointer animate-pulse" 
+                          style={{ 
+                            fontFamily: 'Bahnschrift, sans-serif',
+                            textShadow: '0 4px 8px rgba(59,130,246,0.3), 0 8px 16px rgba(59,130,246,0.2)',
+                            transformStyle: 'preserve-3d'
+                          }}>H</span>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500">Upload your artwork files to get started</p>
               </div>
             )}
           </div>
