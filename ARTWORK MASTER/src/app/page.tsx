@@ -596,8 +596,8 @@ export default function Home() {
         />
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto ml-80 mt-32 transition-all duration-300 bg-white" id="main-content">
+            {/* Main Content */}
+            <div className="flex-1 overflow-auto ml-80 mt-16 transition-all duration-300 bg-white" id="main-content">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Header - Only show on artwork section */}
           {activeTool === 'file-upload' && (
