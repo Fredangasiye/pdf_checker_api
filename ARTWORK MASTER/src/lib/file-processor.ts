@@ -467,16 +467,135 @@ export class FileProcessor {
 
   private async extractPDFFonts(pdfDoc: PDFDocument): Promise<string[]> {
     try {
-      // This is a simplified font extraction
-      // In a real implementation, you'd parse the PDF's font resources
-      const pages = pdfDoc.getPages()
-      if (pages.length === 0) return []
+      const fonts: string[] = []
       
-      // For now, return common fonts that might be present
-      return ['Helvetica', 'Times-Roman']
-    } catch {
+      // Access the PDF's internal structure through pdf-lib
+      const pdfContext = (pdfDoc as any).context
+      
+      if (pdfContext && pdfContext.indirectObjects) {
+        console.log('Analyzing PDF internal structure for fonts...')
+        
+        // Extract fonts from Font Resources in page dictionaries
+        const pages = pdfDoc.getPages()
+        for (const page of pages) {
+          try {
+            // Access page resources
+            const pageDict = (page as any).node
+            if (pageDict && pageDict.Resources) {
+              const resources = pageDict.Resources
+              
+              // Check for Font dictionary in resources
+              if (resources.Font) {
+                const fontDict = resources.Font
+                
+                // Iterate through font entries
+                for (const [fontKey, fontRef] of Object.entries(fontDict)) {
+                  try {
+                    // Get the actual font object
+                    const fontObj = pdfContext.lookup(fontRef)
+                    if (fontObj && fontObj.dict) {
+                      const fontDict = fontObj.dict
+                      
+                      // Check if this is a font dictionary
+                      const type = fontDict.get('Type')
+                      if (type && type.toString() === '/Font') {
+                        
+                        // Extract BaseFont name - this is the most reliable source
+                        const baseFont = fontDict.get('BaseFont')
+                        if (baseFont) {
+                          const fontName = baseFont.toString().replace('/', '')
+                          // Clean up font names - remove common suffixes and prefixes
+                          const cleanName = this.cleanFontName(fontName)
+                          if (cleanName && cleanName.length > 0 && !fonts.includes(cleanName)) {
+                            fonts.push(cleanName)
+                            console.log('Found font in page resources:', cleanName)
+                          }
+                        }
+                        
+                        // Extract FontName (for embedded fonts)
+                        const fontName = fontDict.get('FontName')
+                        if (fontName) {
+                          const name = fontName.toString().replace('/', '')
+                          const cleanName = this.cleanFontName(name)
+                          if (cleanName && cleanName.length > 0 && !fonts.includes(cleanName)) {
+                            fonts.push(cleanName)
+                            console.log('Found embedded font name:', cleanName)
+                          }
+                        }
+                        
+                        // Check for FontDescriptor
+                        const fontDescriptor = fontDict.get('FontDescriptor')
+                        if (fontDescriptor) {
+                          const descriptorObj = pdfContext.lookup(fontDescriptor)
+                          if (descriptorObj && descriptorObj.dict) {
+                            const descriptorFontName = descriptorObj.dict.get('FontName')
+                            if (descriptorFontName) {
+                              const name = descriptorFontName.toString().replace('/', '')
+                              const cleanName = this.cleanFontName(name)
+                              if (cleanName && cleanName.length > 0 && !fonts.includes(cleanName)) {
+                                fonts.push(cleanName)
+                                console.log('Found font descriptor name:', cleanName)
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  } catch (error) {
+                    console.warn('Error processing font entry:', error)
+                    continue
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            console.warn('Error processing page resources:', error)
+            continue
+          }
+        }
+        
+        // Remove duplicates and clean up font names
+        const uniqueFonts = [...new Set(fonts)].filter(font => {
+          // Filter out empty strings and very short names
+          return font && font.length > 1
+        })
+        
+        console.log('Fonts extracted from internal structure:', uniqueFonts)
+        return uniqueFonts
+      }
+      
+      return []
+    } catch (error) {
+      console.error('Error extracting PDF fonts:', error)
       return []
     }
+  }
+
+  private cleanFontName(fontName: string): string {
+    if (!fontName) return ''
+    
+    // Remove common PDF font prefixes and suffixes
+    let cleaned = fontName
+      .replace(/^[A-Z]+[+-]/, '') // Remove encoding prefixes like Arial-BoldItalic
+      .replace(/-(Bold|Italic|Regular|Light|Medium|Heavy|Black|Thin|UltraLight|SemiBold|ExtraBold|Condensed|Extended|Narrow|Wide)$/i, '') // Remove common weight/style suffixes
+      .replace(/-(B|I|R|L|M|H|Bl|T|UL|SB|EB|C|E|N|W)$/i, '') // Remove abbreviated suffixes
+      .replace(/^[A-Z][A-Z0-9]+-/, '') // Remove encoding prefixes like ArialMT
+      .replace(/MT$/, '') // Remove MT suffix
+      .replace(/PS$/, '') // Remove PS suffix
+      .replace(/Std$/, '') // Remove Std suffix
+      .replace(/Pro$/, '') // Remove Pro suffix
+      .replace(/WGL$/, '') // Remove WGL suffix
+      .replace(/ANSI$/, '') // Remove ANSI suffix
+      .replace(/Symbol$/, '') // Remove Symbol suffix
+      .replace(/ZapfDingbats$/, '') // Remove ZapfDingbats suffix
+      .trim()
+    
+    // If the cleaned name is too short or empty, return the original
+    if (cleaned.length < 2) {
+      return fontName
+    }
+    
+    return cleaned
   }
 
   private async detectPDFColorSpace(pdfDoc: PDFDocument): Promise<string> {

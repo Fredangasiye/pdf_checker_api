@@ -165,13 +165,15 @@ export class BrowserFileAnalyzer {
                       const type = fontDict.get('Type')
                       if (type && type.toString() === '/Font') {
                         
-                        // Extract BaseFont name
+                        // Extract BaseFont name - this is the most reliable source
                         const baseFont = fontDict.get('BaseFont')
                         if (baseFont) {
                           const fontName = baseFont.toString().replace('/', '')
-                          if (fontName && fontName.length > 0) {
-                            fonts.push(fontName)
-                            console.log('Found font in page resources:', fontName)
+                          // Clean up font names - remove common suffixes and prefixes
+                          const cleanName = this.cleanFontName(fontName)
+                          if (cleanName && cleanName.length > 0 && !fonts.includes(cleanName)) {
+                            fonts.push(cleanName)
+                            console.log('Found font in page resources:', cleanName)
                           }
                         }
                         
@@ -179,9 +181,10 @@ export class BrowserFileAnalyzer {
                         const fontName = fontDict.get('FontName')
                         if (fontName) {
                           const name = fontName.toString().replace('/', '')
-                          if (name && name.length > 0 && !fonts.includes(name)) {
-                            fonts.push(name)
-                            console.log('Found embedded font name:', name)
+                          const cleanName = this.cleanFontName(name)
+                          if (cleanName && cleanName.length > 0 && !fonts.includes(cleanName)) {
+                            fonts.push(cleanName)
+                            console.log('Found embedded font name:', cleanName)
                           }
                         }
                         
@@ -193,9 +196,10 @@ export class BrowserFileAnalyzer {
                             const descriptorFontName = descriptorObj.dict.get('FontName')
                             if (descriptorFontName) {
                               const name = descriptorFontName.toString().replace('/', '')
-                              if (name && name.length > 0 && !fonts.includes(name)) {
-                                fonts.push(name)
-                                console.log('Found font descriptor name:', name)
+                              const cleanName = this.cleanFontName(name)
+                              if (cleanName && cleanName.length > 0 && !fonts.includes(cleanName)) {
+                                fonts.push(cleanName)
+                                console.log('Found font descriptor name:', cleanName)
                               }
                             }
                           }
@@ -278,10 +282,10 @@ export class BrowserFileAnalyzer {
           console.warn('Error checking text operators:', error)
         }
         
-        // Remove duplicates and filter out common system fonts
+        // Remove duplicates and clean up font names
         const uniqueFonts = [...new Set(fonts)].filter(font => {
-          const systemFonts = ['Helvetica', 'Times-Roman', 'Courier', 'Symbol', 'ZapfDingbats', 'Arial', 'Times', 'CourierNew']
-          return !systemFonts.includes(font)
+          // Filter out empty strings and very short names
+          return font && font.length > 1
         })
         
         console.log('Fonts extracted from internal structure:', uniqueFonts)
@@ -289,7 +293,7 @@ export class BrowserFileAnalyzer {
         if (uniqueFonts.length > 0) {
           return uniqueFonts
         } else if (hasTextOperators) {
-          return ['Live Text Detected (Using Default Fonts)']
+          return ['Live Text Detected (Fonts Not Extracted)']
         } else {
           return []
         }
@@ -300,6 +304,33 @@ export class BrowserFileAnalyzer {
       console.error('Error extracting PDF fonts:', error)
       return []
     }
+  }
+
+  private cleanFontName(fontName: string): string {
+    if (!fontName) return ''
+    
+    // Remove common PDF font prefixes and suffixes
+    let cleaned = fontName
+      .replace(/^[A-Z]+[+-]/, '') // Remove encoding prefixes like Arial-BoldItalic
+      .replace(/-(Bold|Italic|Regular|Light|Medium|Heavy|Black|Thin|UltraLight|SemiBold|ExtraBold|Condensed|Extended|Narrow|Wide)$/i, '') // Remove common weight/style suffixes
+      .replace(/-(B|I|R|L|M|H|Bl|T|UL|SB|EB|C|E|N|W)$/i, '') // Remove abbreviated suffixes
+      .replace(/^[A-Z][A-Z0-9]+-/, '') // Remove encoding prefixes like ArialMT
+      .replace(/MT$/, '') // Remove MT suffix
+      .replace(/PS$/, '') // Remove PS suffix
+      .replace(/Std$/, '') // Remove Std suffix
+      .replace(/Pro$/, '') // Remove Pro suffix
+      .replace(/WGL$/, '') // Remove WGL suffix
+      .replace(/ANSI$/, '') // Remove ANSI suffix
+      .replace(/Symbol$/, '') // Remove Symbol suffix
+      .replace(/ZapfDingbats$/, '') // Remove ZapfDingbats suffix
+      .trim()
+    
+    // If the cleaned name is too short or empty, return the original
+    if (cleaned.length < 2) {
+      return fontName
+    }
+    
+    return cleaned
   }
 
   private async analyzePDFSpotColors(file: File): Promise<string[]> {
