@@ -91,13 +91,13 @@ export default function Home() {
       const mainContent = document.getElementById('main-content')
       
       if (sidebar && mainContent) {
-        const isCollapsed = sidebar.classList.contains('w-16')
+        const isCollapsed = sidebar.classList.contains('w-12')
         if (isCollapsed) {
-          mainContent.classList.remove('ml-80')
-          mainContent.classList.add('ml-16')
+          mainContent.classList.remove('ml-64')
+          mainContent.classList.add('ml-12')
         } else {
-          mainContent.classList.remove('ml-16')
-          mainContent.classList.add('ml-80')
+          mainContent.classList.remove('ml-12')
+          mainContent.classList.add('ml-64')
         }
       }
     }
@@ -597,7 +597,7 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto ml-80 transition-all duration-300" id="main-content">
+      <div className="flex-1 overflow-auto ml-64 transition-all duration-300" id="main-content">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Header - Only show on artwork section */}
           {activeTool === 'file-upload' && (
