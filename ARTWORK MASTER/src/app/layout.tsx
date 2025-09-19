@@ -29,11 +29,11 @@ export default function RootLayout({
             
             {/* Centered Title */}
             <div className="flex-1 flex flex-col items-center relative z-10">
-              <div className="text-center flex items-start">
+              <div className="text-center">
                 <h1 className="text-3xl sm:text-4xl font-bold tech-title mb-2">
                   <span className="font-ethno tracking-widest">AI</span> Powered Preflight Portal
                 </h1>
-                <p className="tech-tagline text-[9px] sm:text-xs font-semibold ml-4 mt-1">
+                <p className="tech-tagline text-[9px] sm:text-xs font-semibold">
                   Professional print solutions with automated artwork validation
                 </p>
               </div>
