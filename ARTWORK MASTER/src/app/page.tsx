@@ -426,12 +426,9 @@ export default function Home() {
         return (
           <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-8">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-semibold text-black mb-2">
+              <h2 className="text-xl font-medium text-gray-800 mb-2">
                 File Upload & Analysis
               </h2>
-              <p className="text-black">
-                Use the upload section in the sidebar to upload your artwork files
-              </p>
             </div>
             
             {uploadState.results ? (
@@ -469,7 +466,7 @@ export default function Home() {
               </div>
             ) : (
               <div className="text-center text-gray-500">
-                <p>No file uploaded yet. Please use the upload section in the sidebar.</p>
+                <p className="text-xs">No file uploaded yet.</p>
               </div>
             )}
           </div>
@@ -553,7 +550,8 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar Navigation */}
-      <SidebarNavigation
+      <div className="w-80 bg-white border-r border-gray-200 flex-shrink-0 fixed left-0 top-0 h-full overflow-y-auto z-10">
+        <SidebarNavigation
         activeTool={activeTool}
         onToolChange={setActiveTool}
         uploadSlot={activeTool === 'file-upload' && uploadState.file ? (
@@ -588,21 +586,24 @@ export default function Home() {
         }
         isAdmin={isAdmin}
         onAdminChange={(next) => setIsAdmin(next)}
-      />
+        />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto ml-80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-black mb-4">
-              Welcome to Beith Digital Preflight Portal
-            </h1>
-            <p className="text-xl text-black max-w-3xl mx-auto">
-              Upload your artwork files and get instant validation against our print specifications. 
-              Ensure your designs are print-ready before production.
-            </p>
-          </div>
+          {/* Header - Only show on artwork section */}
+          {activeTool === 'file-upload' && (
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-light text-gray-700 mb-2 tracking-wide">
+                Welcome to Beith Digital Preflight Portal
+              </h1>
+              <p className="text-sm text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                Upload your artwork files and get instant validation against our print specifications. 
+                Ensure your designs are print-ready before production.
+              </p>
+            </div>
+          )}
                 
           {/* Tool Content */}
           <div className="max-w-4xl mx-auto">

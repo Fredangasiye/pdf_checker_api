@@ -14,21 +14,9 @@ export interface ChatState {
 }
 
 export class BEITHAChatbot {
-  private apiKey: string
-  private baseUrl: string
-  private model: string
-
-  constructor() {
-    this.apiKey = AI_CONFIG.OPENROUTER_API_KEY || ''
-    this.baseUrl = AI_CONFIG.OPENROUTER_BASE_URL
-    this.model = AI_CONFIG.MISTRAL_MODEL
-  }
+  constructor() {}
 
   async sendMessage(messages: ChatMessage[]): Promise<string> {
-    if (!this.apiKey) {
-      throw new Error('OpenRouter API key not configured')
-    }
-
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -52,7 +40,7 @@ export class BEITHAChatbot {
   }
 
   isConfigured(): boolean {
-    return !!this.apiKey
+    return true
   }
 }
 

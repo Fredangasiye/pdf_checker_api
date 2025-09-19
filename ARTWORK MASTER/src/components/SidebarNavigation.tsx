@@ -130,13 +130,15 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
   }
 
   return (
-    <nav className="space-y-4 p-4">
-      {mainCards.map((card) => (
+    <nav className="h-full overflow-y-auto">
+      {/* Fixed Header Section - ARTWORK */}
+      <div className="p-4 pb-2 border-b border-gray-200">
+        {mainCards.filter(card => card.id === 'artwork').map((card) => (
         <div key={card.id} className="space-y-2">
           {/* Main Card */}
           <button
             onClick={() => handleCardClick(card.id)}
-            className={`w-full flex items-center px-4 py-4 text-sm font-medium rounded-lg transition-all duration-200 ${
+            className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
               expandedCard === card.id
                 ? `bg-gradient-to-r ${card.color} text-white shadow-md`
                 : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -153,12 +155,12 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
 
           {/* Sub-items */}
           {expandedCard === card.id && (
-            <div className="ml-6 space-y-2">
+            <div className="ml-4 space-y-1">
               {card.items.map((item) => (
-                <div key={item.id} className="space-y-2">
+                <div key={item.id} className="space-y-1">
                   <button
                     onClick={() => onToolChange(item.id)}
-                    className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                       activeTool === item.id
                         ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
                         : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -181,7 +183,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
                 </div>
               ))}
               {card.id === 'resources' && (
-                <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-sm font-medium text-gray-800">Admin Mode</div>
@@ -202,7 +204,76 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
             </div>
           )}
         </div>
-      ))}
+        ))}
+      </div>
+
+      {/* Scrollable Content Section - Other Cards */}
+      <div className="space-y-2 p-4 pt-2">
+        {mainCards.filter(card => card.id !== 'artwork').map((card) => (
+          <div key={card.id} className="space-y-2">
+            {/* Main Card */}
+            <button
+              onClick={() => handleCardClick(card.id)}
+              className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                expandedCard === card.id
+                  ? `bg-gradient-to-r ${card.color} text-white shadow-md`
+                  : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
+              }`}
+            >
+              <span className="mr-3">{card.icon(expandedCard === card.id)}</span>
+              <div className="text-left">
+                <div className="font-bold text-base">{card.title}</div>
+              </div>
+              <span className="ml-auto text-sm">
+                {expandedCard === card.id ? '▼' : '▶'}
+              </span>
+            </button>
+
+            {/* Sub-items */}
+            {expandedCard === card.id && (
+              <div className="ml-4 space-y-1">
+                {card.items.map((item) => (
+                  <div key={item.id} className="space-y-1">
+                    <button
+                      onClick={() => onToolChange(item.id)}
+                      className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                        activeTool === item.id
+                          ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
+                          : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
+                      }`}
+                    >
+                      <span className="mr-3">{item.icon(activeTool === item.id)}</span>
+                      <div className="text-left">
+                        <div className="font-medium">{item.label}</div>
+                        <div className="text-xs opacity-75">{item.description}</div>
+                      </div>
+                    </button>
+                  </div>
+                ))}
+                {card.id === 'resources' && (
+                  <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-gray-800">Admin Mode</div>
+                        <div className="text-xs text-gray-600">Enable admin features for media and documents</div>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={!!isAdmin}
+                          onChange={(e) => onAdminChange?.(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </nav>
   )
 } 
