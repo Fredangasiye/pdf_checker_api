@@ -630,7 +630,7 @@ export default function Home() {
           {/* Header - Only show on artwork section */}
           {activeTool === 'file-upload' && (
             <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-2 tracking-wide">
+                    <h1 className="text-2xl font-bold text-blue-600 mb-2 tracking-wide">
                       Welcome to Beith Digital Preflight Portal
                     </h1>
               <p className="text-sm text-gray-600 max-w-lg mx-auto leading-relaxed">
