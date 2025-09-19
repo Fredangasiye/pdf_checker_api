@@ -159,7 +159,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
                 {/* Main Card */}
                 <button
                   onClick={() => handleCardClick(card.id)}
-                  className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
+                  className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-300 hover:scale-105 hover:shadow-md ${
                     expandedCard === card.id
                       ? `bg-gradient-to-r ${card.color} text-white shadow-md`
                       : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -181,7 +181,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
                       <div key={item.id} className="space-y-2">
                         <button
                           onClick={() => onToolChange(item.id)}
-                          className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
+                          className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-300 hover:scale-105 hover:shadow-md ${
                             activeTool === item.id
                               ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
                               : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -216,7 +216,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
                 {/* Main Card */}
                 <button
                   onClick={() => handleCardClick(card.id)}
-                  className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
+                  className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-300 hover:scale-105 hover:shadow-md ${
                     expandedCard === card.id
                       ? `bg-gradient-to-r ${card.color} text-white shadow-md`
                       : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -238,7 +238,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
                       <div key={item.id} className="space-y-2">
                         <button
                           onClick={() => onToolChange(item.id)}
-                          className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
+                          className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-300 hover:scale-105 hover:shadow-md ${
                             activeTool === item.id
                               ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
                               : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -287,7 +287,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
               {/* Main Card Icon */}
               <button
                 onClick={() => handleCardClick(card.id)}
-                className={`w-full flex items-center justify-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
+                className={`w-full flex items-center justify-center px-2 py-3 text-xs font-medium rounded transition-all duration-300 hover:scale-105 hover:shadow-md ${
                   expandedCard === card.id
                     ? `bg-gradient-to-r ${card.color} text-white shadow-md`
                     : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -304,7 +304,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
                     <button
                       key={item.id}
                       onClick={() => onToolChange(item.id)}
-                      className={`w-full flex items-center justify-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
+                      className={`w-full flex items-center justify-center px-2 py-3 text-xs font-medium rounded transition-all duration-300 hover:scale-105 hover:shadow-md ${
                         activeTool === item.id
                           ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
                           : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
