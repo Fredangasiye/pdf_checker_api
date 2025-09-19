@@ -451,12 +451,6 @@ export default function Home() {
                   case 'file-upload':
         return (
           <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-8 group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-gray-50">
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-medium text-gray-800 mb-2 group-hover:text-beith-blue-600 transition-colors duration-300">
-                File Upload & Analysis
-              </h2>
-            </div>
-            
             {uploadState.results ? (
               <div className="space-y-8">
                 {/* Results Dashboard */}
@@ -474,7 +468,7 @@ export default function Home() {
             ) : (
               <div className="text-center">
                 {/* Animated 3D BEITH Logo */}
-                <div className="relative mb-8">
+                <div className="relative">
                   <div className="flex justify-center items-center space-x-1 perspective-1000">
                     <span className="text-6xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:text-blue-400 cursor-pointer animate-pulse" 
                           style={{ 
@@ -508,7 +502,6 @@ export default function Home() {
                           }}>H</span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-500">Upload your artwork files to get started</p>
               </div>
             )}
           </div>
