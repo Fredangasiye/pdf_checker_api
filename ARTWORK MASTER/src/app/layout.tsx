@@ -29,7 +29,7 @@ export default function RootLayout({
             
             {/* Centered Title */}
             <div className="flex-1 flex flex-col items-center relative z-10">
-              <div className="text-center">
+              <div className="text-center mt-2">
                 <h1 className="text-3xl sm:text-4xl font-bold tech-title mb-2">
                   <span className="font-ethno tracking-widest">AI</span> Powered Preflight Portal
                 </h1>
