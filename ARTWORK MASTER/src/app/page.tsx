@@ -450,9 +450,9 @@ export default function Home() {
     switch (activeTool) {
                   case 'file-upload':
         return (
-          <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-8">
+          <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-8 group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-gray-50">
             <div className="text-center mb-6">
-              <h2 className="text-xl font-medium text-gray-800 mb-2">
+              <h2 className="text-xl font-medium text-gray-800 mb-2 group-hover:text-beith-blue-600 transition-colors duration-300">
                 File Upload & Analysis
               </h2>
             </div>
