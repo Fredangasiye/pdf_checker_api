@@ -605,7 +605,7 @@ export default function Home() {
               <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
                 Welcome to Beith Digital Preflight Portal
               </h1>
-              <p className="text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-sm text-gray-300 max-w-lg mx-auto leading-relaxed">
                 Upload your artwork files and get instant validation against our print specifications. 
                 Ensure your designs are print-ready before production.
               </p>
