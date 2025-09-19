@@ -15,6 +15,7 @@ interface SidebarNavigationProps {
 
 export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot, fileUploader, isAdmin = false, onAdminChange }: SidebarNavigationProps) {
   const [expandedCard, setExpandedCard] = useState<string | null>('artwork')
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   const mainCards = [
     {
@@ -130,9 +131,29 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
   }
 
   return (
-    <nav className="h-full overflow-y-auto">
-      {/* Fixed Header Section - ARTWORK */}
-      <div className="p-4 pb-2 border-b border-gray-200">
+    <nav className={`h-full overflow-y-auto transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-80'}`}>
+      {/* Collapse Toggle Button */}
+      <div className="p-2 border-b border-gray-200">
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+        >
+          {isCollapsed ? (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {!isCollapsed && (
+        <>
+          {/* Fixed Header Section - ARTWORK */}
+          <div className="p-4 pb-2 border-b border-gray-200">
         {mainCards.filter(card => card.id === 'artwork').map((card) => (
         <div key={card.id} className="space-y-2">
           {/* Main Card */}
@@ -274,6 +295,50 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
           </div>
         ))}
       </div>
+        </>
+      )}
+
+      {/* Collapsed View - Show all buttons as icons */}
+      {isCollapsed && (
+        <div className="p-2 space-y-2">
+          {mainCards.map((card) => (
+            <div key={card.id} className="space-y-1">
+              {/* Main Card Icon */}
+              <button
+                onClick={() => handleCardClick(card.id)}
+                className={`w-full flex items-center justify-center px-2 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  expandedCard === card.id
+                    ? `bg-gradient-to-r ${card.color} text-white shadow-md`
+                    : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
+                }`}
+                title={card.title}
+              >
+                {card.icon(expandedCard === card.id)}
+              </button>
+
+              {/* Sub-items as icons */}
+              {expandedCard === card.id && (
+                <div className="space-y-1">
+                  {card.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => onToolChange(item.id)}
+                      className={`w-full flex items-center justify-center px-2 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                        activeTool === item.id
+                          ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
+                          : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
+                      }`}
+                      title={item.label}
+                    >
+                      {item.icon(activeTool === item.id)}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </nav>
   )
 } 
