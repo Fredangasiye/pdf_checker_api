@@ -131,7 +131,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
   }
 
   return (
-    <nav className={`h-full overflow-y-auto transition-all duration-300 ${isCollapsed ? 'w-12' : 'w-64'}`}>
+    <nav className={`h-full overflow-y-auto transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-80'}`}>
       {/* Collapse Toggle Button */}
       <div className="p-1 border-b border-gray-200">
         <button
