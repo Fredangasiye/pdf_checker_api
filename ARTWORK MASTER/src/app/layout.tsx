@@ -8,7 +8,7 @@ export default function RootLayout({
       <body className="antialiased min-h-screen bg-white">
         {/* Clean Professional Header */}
         <header className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 py-6 flex items-end header-glow">
+          <div className="max-w-7xl mx-auto px-4 py-6 flex items-center header-glow">
             {/* BEITH Logo */}
             <div className="flex-shrink-0 flex items-start space-x-2 -mt-2">
                       <div className="flex items-center">
