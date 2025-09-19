@@ -482,10 +482,10 @@ export default function Home() {
                             textShadow: '0 4px 8px rgba(59,130,246,0.3), 0 8px 16px rgba(59,130,246,0.2)',
                             transformStyle: 'preserve-3d'
                           }}>E</span>
-                    <span className="text-8xl font-bold text-blue-600 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:text-blue-500 cursor-pointer animate-pulse" 
+                    <span className="text-8xl font-bold text-red-600 tracking-widest transform-gpu transition-all duration-300 hover:scale-125 hover:rotate-y-20 hover:rotate-x-10 hover:drop-shadow-[0_0_40px_rgba(239,68,68,0.9)] hover:text-red-500 cursor-pointer animate-pulse hover:animate-bounce" 
                           style={{ 
                             fontFamily: 'Bahnschrift, sans-serif',
-                            textShadow: '0 4px 8px rgba(59,130,246,0.4), 0 8px 16px rgba(59,130,246,0.3)',
+                            textShadow: '0 6px 12px rgba(239,68,68,0.5), 0 12px 24px rgba(239,68,68,0.4), 0 18px 36px rgba(239,68,68,0.3)',
                             transformStyle: 'preserve-3d'
                           }}>I</span>
                     <span className="text-8xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_30px_rgba(59,130,246,0.8)] hover:text-blue-400 cursor-pointer animate-pulse" 
