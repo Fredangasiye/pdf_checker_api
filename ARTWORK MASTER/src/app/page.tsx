@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import FileUploader from '@/components/FileUploader'
-import VisualPreview from '@/components/VisualPreview'
 import PreflightResults from '@/components/PreflightResults'
-import PrintPreview from '@/components/PrintPreview'
 import BEITHAChatbot from '@/components/BEITHAChatbot'
 import ChatButton from '@/components/ChatButton'
 import SidebarNavigation from '@/components/SidebarNavigation'
@@ -444,25 +442,6 @@ export default function Home() {
                   onRetry={handleRetry}
                 />
 
-                {/* Visual Preview */}
-                {uploadState.file && (
-                  <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
-                    <h3 className="text-xl font-semibold text-black mb-4">Artwork Preview</h3>
-                    <div className="flex justify-center">
-                      <VisualPreview file={uploadState.file} />
-                    </div>
-                  </div>
-                )}
-
-                {/* Print Preview */}
-                {uploadState.results.metadata?.dimensions && (
-                  <PrintPreview
-                    artworkUrl={uploadState.file ? URL.createObjectURL(uploadState.file) : ''}
-                    dimensions={uploadState.results.metadata.dimensions}
-                    bleed={uploadState.results.metadata.hasBleed ? 3 : 0}
-                    liveArea={{ top: 5, right: 5, bottom: 5, left: 5 }}
-                  />
-                )}
               </div>
             ) : (
               <div className="text-center text-gray-500">
@@ -620,25 +599,6 @@ export default function Home() {
                   onRetry={handleRetry}
                 />
 
-                {/* Visual Preview */}
-                {uploadState.file && (
-                  <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
-                    <h3 className="text-xl font-semibold text-black mb-4">Artwork Preview</h3>
-                    <div className="flex justify-center">
-                      <VisualPreview file={uploadState.file} />
-                        </div>
-                      </div>
-                )}
-
-                {/* Print Preview */}
-                {uploadState.results.metadata?.dimensions && (
-                  <PrintPreview
-                    artworkUrl={uploadState.file ? URL.createObjectURL(uploadState.file) : ''}
-                    dimensions={uploadState.results.metadata.dimensions}
-                    bleed={uploadState.results.metadata.hasBleed ? 3 : 0}
-                    liveArea={{ top: 5, right: 5, bottom: 5, left: 5 }}
-                  />
-                )}
                         </div>
                 ) : (
               renderToolContent()
@@ -664,8 +624,8 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-black">Visual Preview</h3>
-                  <p className="text-sm text-black">See exactly how your artwork will print with guides</p>
+                  <h3 className="text-lg font-medium text-black">Detailed Analysis</h3>
+                  <p className="text-sm text-black">Get comprehensive analysis of your artwork specifications</p>
                           </div>
 
                 <div className="text-center">
