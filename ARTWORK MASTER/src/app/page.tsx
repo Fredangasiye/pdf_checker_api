@@ -555,7 +555,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-black">
       {/* Sidebar Navigation */}
       <div className="bg-white border-r border-gray-200 flex-shrink-0 fixed left-0 top-32 h-full overflow-y-auto z-10">
         <SidebarNavigation
@@ -597,15 +597,15 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto ml-80 mt-32 transition-all duration-300" id="main-content">
+      <div className="flex-1 overflow-auto ml-80 mt-32 transition-all duration-300 bg-black" id="main-content">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Header - Only show on artwork section */}
           {activeTool === 'file-upload' && (
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-light text-gray-700 mb-2 tracking-wide">
+              <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
                 Welcome to Beith Digital Preflight Portal
               </h1>
-              <p className="text-sm text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed">
                 Upload your artwork files and get instant validation against our print specifications. 
                 Ensure your designs are print-ready before production.
               </p>
@@ -641,8 +641,8 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                         </div>
-                  <h3 className="text-lg font-medium text-black">Instant Validation</h3>
-                  <p className="text-sm text-black">Get immediate feedback on your artwork specifications</p>
+                  <h3 className="text-lg font-medium text-white">Instant Validation</h3>
+                  <p className="text-sm text-gray-300">Get immediate feedback on your artwork specifications</p>
                       </div>
 
                 <div className="text-center">
@@ -652,8 +652,8 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-black">Detailed Analysis</h3>
-                  <p className="text-sm text-black">Get comprehensive analysis of your artwork specifications</p>
+                  <h3 className="text-lg font-medium text-white">Detailed Analysis</h3>
+                  <p className="text-sm text-gray-300">Get comprehensive analysis of your artwork specifications</p>
                           </div>
 
                 <div className="text-center">
@@ -662,8 +662,8 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                           </div>
-                  <h3 className="text-lg font-medium text-black">Smart Guidance</h3>
-                  <p className="text-sm text-black">Get step-by-step instructions to fix any issues</p>
+                  <h3 className="text-lg font-medium text-white">Smart Guidance</h3>
+                  <p className="text-sm text-gray-300">Get step-by-step instructions to fix any issues</p>
                         </div>
                   </div>
                 )}
