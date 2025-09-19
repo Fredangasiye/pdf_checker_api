@@ -136,7 +136,7 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
       <div className="p-1 border-b border-gray-200">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="w-full flex items-center justify-center px-2 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors"
+          className="w-full flex items-center justify-center px-2 py-3 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors"
         >
           {isCollapsed ? (
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,11 +155,11 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
           {/* Fixed Header Section - ARTWORK */}
           <div className="p-2 pb-1 border-b border-gray-200">
             {mainCards.filter(card => card.id === 'artwork').map((card) => (
-              <div key={card.id} className="space-y-1">
+              <div key={card.id} className="space-y-2">
                 {/* Main Card */}
                 <button
                   onClick={() => handleCardClick(card.id)}
-                  className={`w-full flex items-center px-2 py-1 text-xs font-medium rounded transition-all duration-200 ${
+                  className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
                     expandedCard === card.id
                       ? `bg-gradient-to-r ${card.color} text-white shadow-md`
                       : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -176,12 +176,12 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
 
                 {/* Sub-items */}
                 {expandedCard === card.id && (
-                  <div className="ml-2 space-y-1">
+                  <div className="ml-2 space-y-2">
                     {card.items.map((item) => (
-                      <div key={item.id} className="space-y-1">
+                      <div key={item.id} className="space-y-2">
                         <button
                           onClick={() => onToolChange(item.id)}
-                          className={`w-full flex items-center px-2 py-1 text-xs font-medium rounded transition-all duration-200 ${
+                          className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
                             activeTool === item.id
                               ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
                               : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -210,13 +210,13 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
           </div>
 
           {/* Scrollable Content Section - Other Cards */}
-          <div className="space-y-1 p-2 pt-1">
+          <div className="space-y-2 p-2 pt-1">
             {mainCards.filter(card => card.id !== 'artwork').map((card) => (
-              <div key={card.id} className="space-y-1">
+              <div key={card.id} className="space-y-2">
                 {/* Main Card */}
                 <button
                   onClick={() => handleCardClick(card.id)}
-                  className={`w-full flex items-center px-2 py-1 text-xs font-medium rounded transition-all duration-200 ${
+                  className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
                     expandedCard === card.id
                       ? `bg-gradient-to-r ${card.color} text-white shadow-md`
                       : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -233,12 +233,12 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
 
                 {/* Sub-items */}
                 {expandedCard === card.id && (
-                  <div className="ml-2 space-y-1">
+                  <div className="ml-2 space-y-2">
                     {card.items.map((item) => (
-                      <div key={item.id} className="space-y-1">
+                      <div key={item.id} className="space-y-2">
                         <button
                           onClick={() => onToolChange(item.id)}
-                          className={`w-full flex items-center px-2 py-1 text-xs font-medium rounded transition-all duration-200 ${
+                          className={`w-full flex items-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
                             activeTool === item.id
                               ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
                               : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -281,13 +281,13 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
 
       {/* Collapsed View - Show all buttons as icons */}
       {isCollapsed && (
-        <div className="p-1 space-y-1">
+        <div className="p-1 space-y-2">
           {mainCards.map((card) => (
-            <div key={card.id} className="space-y-1">
+            <div key={card.id} className="space-y-2">
               {/* Main Card Icon */}
               <button
                 onClick={() => handleCardClick(card.id)}
-                className={`w-full flex items-center justify-center px-1 py-1 text-xs font-medium rounded transition-all duration-200 ${
+                className={`w-full flex items-center justify-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
                   expandedCard === card.id
                     ? `bg-gradient-to-r ${card.color} text-white shadow-md`
                     : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
@@ -299,12 +299,12 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
 
               {/* Sub-items as icons */}
               {expandedCard === card.id && (
-                <div className="space-y-1">
+                <div className="space-y-2">
                   {card.items.map((item) => (
                     <button
                       key={item.id}
                       onClick={() => onToolChange(item.id)}
-                      className={`w-full flex items-center justify-center px-1 py-1 text-xs font-medium rounded transition-all duration-200 ${
+                      className={`w-full flex items-center justify-center px-2 py-3 text-xs font-medium rounded transition-all duration-200 ${
                         activeTool === item.id
                           ? 'bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md'
                           : 'text-gray-800 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
