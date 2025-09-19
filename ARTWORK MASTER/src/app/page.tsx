@@ -555,7 +555,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen bg-black">
+    <div className="flex h-screen bg-blue-900">
       {/* Sidebar Navigation */}
       <div className="bg-white border-r border-gray-200 flex-shrink-0 fixed left-0 top-32 h-full overflow-y-auto z-10">
         <SidebarNavigation
@@ -597,7 +597,7 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto ml-80 mt-32 transition-all duration-300 bg-black" id="main-content">
+      <div className="flex-1 overflow-auto ml-80 mt-32 transition-all duration-300 bg-blue-900" id="main-content">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Header - Only show on artwork section */}
           {activeTool === 'file-upload' && (
