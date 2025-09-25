@@ -95,6 +95,7 @@ export default function BleedRemovalTool({ onBleedRemoval, isProcessing }: Bleed
             </label>
             <input
               type="file"
+              multiple
               accept=".pdf"
               onChange={handleFileSelect}
               className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-lg text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500/20 file:text-orange-400 hover:file:bg-orange-500/30"

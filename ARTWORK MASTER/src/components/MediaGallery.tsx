@@ -16,11 +16,12 @@ interface MediaItem {
 interface MediaGalleryProps {
   media: MediaItem[]
   onMediaUpload: (file: File, category: string) => void
+  onMediaUploadMultiple?: (files: File[], category: string) => void
   onMediaDelete: (id: string) => void
   isAdmin?: boolean
 }
 
-export default function MediaGallery({ media, onMediaUpload, onMediaDelete, isAdmin = false }: MediaGalleryProps) {
+export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultiple, onMediaDelete, isAdmin = false }: MediaGalleryProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -37,9 +38,18 @@ export default function MediaGallery({ media, onMediaUpload, onMediaDelete, isAd
   })
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      onMediaUpload(file, uploadCategory)
+    const files = e.target.files
+    if (files && files.length > 0) {
+      if (files.length === 1) {
+        onMediaUpload(files[0], uploadCategory)
+      } else if (onMediaUploadMultiple) {
+        onMediaUploadMultiple(Array.from(files), uploadCategory)
+      } else {
+        // Fallback: upload files one by one
+        Array.from(files).forEach(file => {
+          onMediaUpload(file, uploadCategory)
+        })
+      }
       setShowUploadModal(false)
       // Reset the input
       e.target.value = ''
@@ -318,6 +328,7 @@ export default function MediaGallery({ media, onMediaUpload, onMediaDelete, isAd
                 <label className="block text-sm font-medium text-gray-700 mb-2">File</label>
                 <input
                   type="file"
+                  multiple
                   onChange={handleFileUpload}
                   accept={
                     uploadCategory === 'Images' ? 'image/*,.pdf' :

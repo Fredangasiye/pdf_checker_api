@@ -316,6 +316,7 @@ export default function PullUpBannerTool({ onArtworkDrop, isProcessing }: PullUp
                 <input
                   ref={fileInputRef}
                   type="file"
+                  multiple
                   accept="image/*,.pdf,.PDF"
                   onChange={handleFileSelect}
                   className="hidden"

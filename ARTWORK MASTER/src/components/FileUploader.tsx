@@ -5,10 +5,12 @@ import { isValidFileSize, isValidFileType } from '@/lib/env'
 
 interface FileUploaderProps {
   onFileSelect: (file: File) => void
+  onFilesSelect?: (files: File[]) => void
   onError: (message: string) => void
   maxSize?: number
   acceptedTypes?: string[]
   disabled?: boolean
+  multiple?: boolean
 }
 
 interface UploadState {
@@ -19,10 +21,12 @@ interface UploadState {
 
 export default function FileUploader({
   onFileSelect,
+  onFilesSelect,
   onError,
   maxSize = 104857600, // 100MB default
   acceptedTypes = ['pdf', 'ai', 'indd', 'psd', 'tiff', 'tif'],
-  disabled = false
+  disabled = false,
+  multiple = false
 }: FileUploaderProps) {
   const [uploadState, setUploadState] = useState<UploadState>({
     isDragOver: false,
@@ -71,6 +75,44 @@ export default function FileUploader({
     onFileSelect(file)
   }, [validateFile, onFileSelect, onError])
 
+  const handleFilesSelect = useCallback((files: File[]) => {
+    const validFiles: File[] = []
+    const errors: string[] = []
+
+    files.forEach(file => {
+      const error = validateFile(file)
+      if (error) {
+        errors.push(`${file.name}: ${error}`)
+      } else {
+        validFiles.push(file)
+      }
+    })
+
+    if (errors.length > 0) {
+      onError(errors.join('\n'))
+    }
+
+    if (validFiles.length > 0) {
+      setUploadState(prev => ({ ...prev, isUploading: true, progress: 0 }))
+      
+      // Simulate upload progress
+      const interval = setInterval(() => {
+        setUploadState(prev => {
+          if (prev.progress >= 100) {
+            clearInterval(interval)
+            return { ...prev, isUploading: false, progress: 100 }
+          }
+          return { ...prev, progress: prev.progress + 10 }
+        })
+      }, 100)
+
+      // Call the parent handler for multiple files
+      if (onFilesSelect) {
+        onFilesSelect(validFiles)
+      }
+    }
+  }, [validateFile, onFilesSelect, onError])
+
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     if (!disabled) {
@@ -91,16 +133,24 @@ export default function FileUploader({
 
     const files = Array.from(e.dataTransfer.files)
     if (files.length > 0) {
-      handleFileSelect(files[0])
+      if (multiple && onFilesSelect) {
+        handleFilesSelect(files)
+      } else {
+        handleFileSelect(files[0])
+      }
     }
-  }, [disabled, handleFileSelect])
+  }, [disabled, handleFileSelect, handleFilesSelect, multiple, onFilesSelect])
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files.length > 0) {
-      handleFileSelect(files[0])
+      if (multiple && onFilesSelect) {
+        handleFilesSelect(Array.from(files))
+      } else {
+        handleFileSelect(files[0])
+      }
     }
-  }, [handleFileSelect])
+  }, [handleFileSelect, handleFilesSelect, multiple, onFilesSelect])
 
   const handleClick = useCallback(() => {
     if (!disabled && fileInputRef.current) {
@@ -152,6 +202,7 @@ export default function FileUploader({
           accept={acceptedTypes.map(type => `.${type}`).join(',')}
           onChange={handleFileInputChange}
           disabled={disabled}
+          multiple={multiple}
         />
 
         <div className="text-center">
@@ -183,6 +234,7 @@ export default function FileUploader({
               </div>
               <p className="text-sm text-gray-800 mb-2">
                 <span className="font-medium text-blue-600">Click to upload</span> or drag and drop
+                {multiple && <span className="text-blue-600"> multiple files</span>}
               </p>
               <p className="text-xs text-gray-600">
                 {acceptedTypes.join(', ').toUpperCase()} files up to {(maxSize / 1024 / 1024).toFixed(0)}MB

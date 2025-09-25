@@ -372,6 +372,11 @@ export default function Home() {
     }
   }
 
+  const handleMediaUploadMultiple = async (files: File[], category: string = 'Images') => {
+    const uploadPromises = files.map(file => handleMediaUpload(file, category))
+    await Promise.all(uploadPromises)
+  }
+
   const handleMediaDelete = async (mediaId: string) => {
     try {
       const response = await fetch(`/api/delete-media/${mediaId}`, {
@@ -519,6 +524,7 @@ export default function Home() {
               <MediaGallery 
                 media={uploadedMedia} 
                 onMediaUpload={handleMediaUpload} 
+                onMediaUploadMultiple={handleMediaUploadMultiple}
                 onMediaDelete={handleMediaDelete} 
                 isAdmin={isAdmin} 
               />
