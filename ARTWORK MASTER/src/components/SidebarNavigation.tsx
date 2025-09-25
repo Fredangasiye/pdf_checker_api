@@ -252,25 +252,6 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
                         </button>
                       </div>
                     ))}
-                    {card.id === 'resources' && (
-                      <div className="mt-1 p-1 bg-gray-50 rounded border border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-xs font-medium text-gray-800">Admin</div>
-                            <div className="text-xs text-gray-600">Enable features</div>
-                          </div>
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={!!isAdmin}
-                              onChange={(e) => onAdminChange?.(e.target.checked)}
-                              className="sr-only peer"
-                            />
-                            <div className="w-8 h-4 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
-                          </label>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -318,6 +299,29 @@ export default function SidebarNavigation({ activeTool, onToolChange, uploadSlot
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Admin Switch - Outside Resources Section */}
+      {!isCollapsed && (
+        <div className="p-4 pt-2 border-t border-gray-200">
+          <div className="p-2 bg-gray-50 rounded border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-medium text-gray-800">Admin Mode</div>
+                <div className="text-xs text-gray-600">Enable admin features</div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!isAdmin}
+                  onChange={(e) => onAdminChange?.(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-8 h-4 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+          </div>
         </div>
       )}
 
