@@ -40,7 +40,7 @@ interface DocumentItem {
   uploadedAt: Date
 }
 
-type ActiveTool = 'file-upload' | 'bleed-add' | 'bleed-remove' | 'color-change' | 'pullup-banner' | 'media' | 'documents'
+type ActiveTool = 'file-upload' | 'bleed-add' | 'bleed-remove' | 'color-change' | 'pullup-banner' | 'artwork-guidelines' | 'company-policies' | 'training-manuals' | 'media'
 
 // LocalStorage keys
 const STORAGE_KEYS = {
@@ -523,58 +523,25 @@ export default function Home() {
                 isAdmin={isAdmin} 
               />
         )
-      case 'documents':
+      case 'artwork-guidelines':
         return (
           <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-black">Documents</h2>
-              <div className="flex gap-2">
-                      <input
-                  type="text"
-                  placeholder="Search documents..."
-                  value={documentSearchTerm}
-                  onChange={(e) => setDocumentSearchTerm(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-beith-blue-500"
-                />
-                <select
-                  value={documentFilter}
-                  onChange={(e) => setDocumentFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-beith-blue-500"
-                >
-                  <option value="all">All Types</option>
-                  <option value="pdf">PDF</option>
-                  <option value="doc">DOC</option>
-                  <option value="docx">DOCX</option>
-                </select>
-                    </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {uploadedDocuments
-                .filter(doc => 
-                  doc.name.toLowerCase().includes(documentSearchTerm.toLowerCase()) &&
-                  (documentFilter === 'all' || doc.type.includes(documentFilter))
-                )
-                .map(doc => (
-                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium text-black">{doc.name}</h3>
-                        <p className="text-sm text-gray-600">{doc.type}</p>
-                        <p className="text-sm text-gray-600">{(doc.size / 1024 / 1024).toFixed(2)} MB</p>
-                      </div>
-              <button
-                        onClick={() => handleDocumentDelete(doc.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                      </button>
-            </div>
-                  </div>
-                ))}
-            </div>
+            <h2 className="text-xl font-medium text-gray-800 mb-4">Artwork Guidelines</h2>
+            <p className="text-gray-600">Design specifications and guidelines coming soon...</p>
+          </div>
+        )
+      case 'company-policies':
+        return (
+          <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
+            <h2 className="text-xl font-medium text-gray-800 mb-4">Company Policies</h2>
+            <p className="text-gray-600">Corporate policies and procedures coming soon...</p>
+          </div>
+        )
+      case 'training-manuals':
+        return (
+          <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
+            <h2 className="text-xl font-medium text-gray-800 mb-4">Training Manuals</h2>
+            <p className="text-gray-600">Learning materials and guides coming soon...</p>
           </div>
         )
       default:
