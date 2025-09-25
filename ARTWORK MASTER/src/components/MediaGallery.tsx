@@ -233,20 +233,35 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
                   <div className={`bg-red-50 border-2 border-red-200 flex flex-col items-center justify-center cursor-pointer hover:bg-red-100 transition-colors ${
                     viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
                   }`} onClick={() => setSelectedMedia(item)}>
-                    <span className="text-4xl text-red-600 mb-2">📄</span>
-                    <span className="text-lg text-red-700 font-bold text-center">
+                    <svg className="w-8 h-8 text-red-600 mb-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                    </svg>
+                    <span className="text-sm text-red-700 font-bold text-center">
                       PDF
                     </span>
                   </div>
+                ) : item.type.startsWith('image/') ? (
+                  <div className={`relative overflow-hidden cursor-pointer bg-gray-50 ${
+                    viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
+                  }`} onClick={() => setSelectedMedia(item)}>
+                    <img
+                      src={item.url}
+                      alt={item.name}
+                      className="w-full h-full object-contain"
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </div>
                 ) : item.thumbnail ? (
-                  <img
-                    src={item.thumbnail}
-                    alt={item.name}
-                    className={`object-contain cursor-pointer bg-gray-50 ${
-                      viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
-                    }`}
-                    onClick={() => setSelectedMedia(item)}
-                  />
+                  <div className={`relative overflow-hidden cursor-pointer bg-gray-50 ${
+                    viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
+                  }`} onClick={() => setSelectedMedia(item)}>
+                    <img
+                      src={item.thumbnail}
+                      alt={item.name}
+                      className="w-full h-full object-contain"
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </div>
                 ) : (
                   <div className={`bg-gray-100 flex items-center justify-center ${
                     viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
@@ -369,11 +384,14 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
             
             <div className="p-6">
               {selectedMedia.type.startsWith('image/') ? (
-                <img
-                  src={selectedMedia.url}
-                  alt={selectedMedia.name}
-                  className="max-w-full max-h-[60vh] object-contain mx-auto"
-                />
+                <div className="flex justify-center">
+                  <img
+                    src={selectedMedia.url}
+                    alt={selectedMedia.name}
+                    className="max-w-full max-h-[60vh] object-contain"
+                    style={{ objectFit: 'contain' }}
+                  />
+                </div>
               ) : selectedMedia.type.startsWith('video/') ? (
                 <video
                   src={selectedMedia.url}
@@ -382,21 +400,28 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
                 />
               ) : selectedMedia.type.includes('pdf') || selectedMedia.type === 'application/pdf' ? (
                 <div className="text-center py-12">
-                  <div className="text-6xl mb-4 text-blue-600">📄</div>
-                  <p className="text-gray-500 mb-4">{selectedMedia.name}</p>
+                  <div className="flex justify-center mb-6">
+                    <div className="bg-red-50 border-4 border-red-200 rounded-lg p-8">
+                      <svg className="w-16 h-16 text-red-600 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                      </svg>
+                      <div className="text-2xl font-bold text-red-700">PDF</div>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 mb-6 text-lg">{selectedMedia.name}</p>
                   <div className="space-y-3">
                     <a
                       href={selectedMedia.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                      className="block px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
                     >
                       View PDF
                     </a>
                     <a
                       href={selectedMedia.url}
                       download={selectedMedia.name}
-                      className="block px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                      className="block px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
                     >
                       Download PDF
                     </a>
