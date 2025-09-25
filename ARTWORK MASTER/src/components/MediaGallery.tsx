@@ -11,6 +11,8 @@ interface MediaItem {
   url: string
   thumbnail?: string
   uploadDate: Date
+  isUploading?: boolean
+  uploadProgress?: number
 }
 
 interface MediaGalleryProps {
@@ -28,6 +30,7 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null)
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [uploadCategory, setUploadCategory] = useState('Images')
+  const [uploadingFiles, setUploadingFiles] = useState<Map<string, { progress: number; file: File }>>(new Map())
 
   // Filter media based on search and filter
   const filteredMedia = media.filter(item => {
@@ -40,13 +43,43 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files.length > 0) {
+      const fileArray = Array.from(files)
+      
+      // Add files to uploading state
+      fileArray.forEach(file => {
+        const fileId = `uploading_${Date.now()}_${Math.random()}`
+        setUploadingFiles(prev => new Map(prev.set(fileId, { progress: 0, file })))
+        
+        // Simulate upload progress
+        const progressInterval = setInterval(() => {
+          setUploadingFiles(prev => {
+            const current = prev.get(fileId)
+            if (current && current.progress < 100) {
+              const newProgress = Math.min(current.progress + Math.random() * 20, 100)
+              return new Map(prev.set(fileId, { ...current, progress: newProgress }))
+            }
+            return prev
+          })
+        }, 200)
+        
+        // Complete upload after progress reaches 100
+        setTimeout(() => {
+          clearInterval(progressInterval)
+          setUploadingFiles(prev => {
+            const newMap = new Map(prev)
+            newMap.delete(fileId)
+            return newMap
+          })
+        }, 2000 + Math.random() * 1000) // 2-3 seconds total
+      })
+      
       if (files.length === 1) {
         onMediaUpload(files[0], uploadCategory)
       } else if (onMediaUploadMultiple) {
-        onMediaUploadMultiple(Array.from(files), uploadCategory)
+        onMediaUploadMultiple(fileArray, uploadCategory)
       } else {
         // Fallback: upload files one by one
-        Array.from(files).forEach(file => {
+        fileArray.forEach(file => {
           onMediaUpload(file, uploadCategory)
         })
       }
@@ -140,6 +173,28 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
         </select>
       </div>
 
+      {/* Global Upload Progress */}
+      {uploadingFiles.size > 0 && (
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-blue-900">
+              Uploading {uploadingFiles.size} file{uploadingFiles.size > 1 ? 's' : ''}...
+            </h3>
+            <div className="text-xs text-blue-600">
+              {Array.from(uploadingFiles.values()).reduce((acc, { progress }) => acc + progress, 0) / uploadingFiles.size}%
+            </div>
+          </div>
+          <div className="w-full bg-blue-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ 
+                width: `${Array.from(uploadingFiles.values()).reduce((acc, { progress }) => acc + progress, 0) / uploadingFiles.size}%` 
+              }}
+            ></div>
+          </div>
+        </div>
+      )}
+
       {/* Media Categories */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <button
@@ -210,7 +265,7 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
       </div>
 
       {/* Media Content */}
-      {filteredMedia.length === 0 ? (
+      {filteredMedia.length === 0 && uploadingFiles.size === 0 ? (
                         <div className="text-center py-12">
                   <div className="text-6xl mb-4 text-blue-600">🎨</div>
                   <p className="text-gray-500 text-lg">No media found.</p>
@@ -220,6 +275,55 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
                 </div>
       ) : (
         <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}>
+          {/* Uploading Files */}
+          {Array.from(uploadingFiles.entries()).map(([fileId, { progress, file }]) => (
+            <div
+              key={fileId}
+              className={`bg-blue-50 rounded-lg border-2 border-blue-200 overflow-hidden ${
+                viewMode === 'list' ? 'flex items-center p-4' : ''
+              }`}
+            >
+              {/* Uploading Thumbnail */}
+              <div className={viewMode === 'list' ? 'flex-shrink-0 mr-4' : ''}>
+                <div className={`bg-blue-100 border-2 border-blue-300 flex flex-col items-center justify-center ${
+                  viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
+                }`}>
+                  <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mb-2"></div>
+                  <span className="text-sm text-blue-700 font-bold text-center">
+                    Uploading...
+                  </span>
+                </div>
+              </div>
+
+              {/* Uploading Content */}
+              <div className={viewMode === 'list' ? 'flex-1 min-w-0' : 'p-4'}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-blue-900 truncate">{file.name}</h4>
+                    <p className="text-sm text-blue-600 mt-1">{uploadCategory}</p>
+                  </div>
+                </div>
+
+                <div className="mt-2 text-xs text-blue-500 space-y-1">
+                  <div>Size: {formatFileSize(file.size)}</div>
+                  <div>Type: {file.type.split('/')[1]?.toUpperCase() || file.type}</div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mt-3">
+                  <div className="w-full bg-blue-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-1 text-center">{Math.round(progress)}%</p>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Regular Media Items */}
           {filteredMedia.map((item) => (
             <div
               key={item.id}
