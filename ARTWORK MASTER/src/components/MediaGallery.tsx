@@ -398,7 +398,7 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
                 <div className="mt-2 text-xs text-gray-400 space-y-1">
                   <div>Size: {formatFileSize(item.size)}</div>
                   <div>Type: {item.type.split('/')[1]?.toUpperCase() || item.type}</div>
-                  <div>Uploaded: {item.uploadDate.toLocaleDateString()}</div>
+                  <div>Uploaded: {(item.uploadDate || item.uploadedAt || new Date()).toLocaleDateString()}</div>
                 </div>
 
                 {/* Actions */}
@@ -548,7 +548,7 @@ export default function MediaGallery({ media, onMediaUpload, onMediaUploadMultip
               <div className="mt-4 text-sm text-gray-600">
                 <p>Size: {formatFileSize(selectedMedia.size)}</p>
                 <p>Type: {selectedMedia.type}</p>
-                <p>Uploaded: {selectedMedia.uploadDate.toLocaleDateString()}</p>
+                <p>Uploaded: {(selectedMedia.uploadDate || selectedMedia.uploadedAt || new Date()).toLocaleDateString()}</p>
               </div>
             </div>
           </div>

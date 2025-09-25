@@ -356,7 +356,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
                 <div className="mt-2 text-xs text-gray-400 space-y-1">
                   <div>Size: {formatFileSize(item.size)}</div>
                   <div>Type: {item.type.split('/')[1]?.toUpperCase() || item.type}</div>
-                  <div>Uploaded: {item.uploadDate.toLocaleDateString()}</div>
+                  <div>Uploaded: {(item.uploadDate || item.uploadedAt || new Date()).toLocaleDateString()}</div>
                 </div>
 
                 {/* Actions */}
@@ -488,7 +488,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
               <div className="mt-6 pt-6 border-t border-gray-200 text-sm text-gray-500 space-y-1">
                 <p>Size: {formatFileSize(selectedDocument.size)}</p>
                 <p>Type: {selectedDocument.type}</p>
-                <p>Uploaded: {selectedDocument.uploadDate.toLocaleDateString()}</p>
+                <p>Uploaded: {(selectedDocument.uploadDate || selectedDocument.uploadedAt || new Date()).toLocaleDateString()}</p>
               </div>
             </div>
           </div>
