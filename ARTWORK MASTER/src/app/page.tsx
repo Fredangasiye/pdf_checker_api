@@ -7,6 +7,7 @@ import BEITHAChatbot from '@/components/BEITHAChatbot'
 import ChatButton from '@/components/ChatButton'
 import SidebarNavigation from '@/components/SidebarNavigation'
 import MediaGallery from '@/components/MediaGallery'
+import DocumentsGallery from '@/components/DocumentsGallery'
 import BleedAdderTool from '@/components/BleedAdderTool'
 import BleedRemovalTool from '@/components/BleedRemovalTool'
 import PDFColorChanger from '@/components/PDFColorChanger'
@@ -37,6 +38,8 @@ interface DocumentItem {
     type: string
   size: number
     url: string
+  category: string
+  uploadDate: Date
   uploadedAt: Date
 }
 
@@ -394,7 +397,7 @@ export default function Home() {
   }
 
   // Document handlers with persistence
-  const handleDocumentUpload = async (file: File) => {
+  const handleDocumentUpload = async (file: File, category: string = 'Artwork Guidelines') => {
     try {
       const formData = new FormData()
       formData.append('file', file)
@@ -415,6 +418,8 @@ export default function Home() {
           type: file.type,
         size: file.size,
         url: result.url || URL.createObjectURL(file),
+        category,
+        uploadDate: new Date(),
         uploadedAt: new Date()
       }
 
@@ -429,10 +434,17 @@ export default function Home() {
         type: file.type,
         size: file.size,
         url: URL.createObjectURL(file),
+        category: category || 'Artwork Guidelines',
+        uploadDate: new Date(),
         uploadedAt: new Date()
       }
       setUploadedDocuments(prev => [...prev, newDocumentItem])
     }
+  }
+
+  const handleDocumentUploadMultiple = async (files: File[], category: string = 'Artwork Guidelines') => {
+    const uploadPromises = files.map(file => handleDocumentUpload(file, category))
+    await Promise.all(uploadPromises)
   }
 
   const handleDocumentDelete = async (documentId: string) => {
@@ -530,25 +542,16 @@ export default function Home() {
               />
         )
       case 'artwork-guidelines':
-        return (
-          <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
-            <h2 className="text-xl font-medium text-gray-800 mb-4">Artwork Guidelines</h2>
-            <p className="text-gray-600">Design specifications and guidelines coming soon...</p>
-          </div>
-        )
       case 'company-policies':
-        return (
-          <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
-            <h2 className="text-xl font-medium text-gray-800 mb-4">Company Policies</h2>
-            <p className="text-gray-600">Corporate policies and procedures coming soon...</p>
-          </div>
-        )
       case 'training-manuals':
         return (
-          <div className="bg-white rounded-lg shadow-lg border border-beith-gray-200 p-6">
-            <h2 className="text-xl font-medium text-gray-800 mb-4">Training Manuals</h2>
-            <p className="text-gray-600">Learning materials and guides coming soon...</p>
-          </div>
+          <DocumentsGallery 
+            documents={uploadedDocuments} 
+            onDocumentUpload={handleDocumentUpload} 
+            onDocumentUploadMultiple={handleDocumentUploadMultiple}
+            onDocumentDelete={handleDocumentDelete} 
+            isAdmin={isAdmin} 
+          />
         )
       default:
         return null
