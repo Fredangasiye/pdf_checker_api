@@ -280,42 +280,88 @@ export class FileProcessor {
 
   private async processPDF(filePath: string): Promise<ProcessingResult['metadata']> {
     try {
-      const pdfBytes = await fs.readFile(filePath)
-      const pdfDoc = await PDFDocument.load(pdfBytes)
-      const pages = pdfDoc.getPages()
+      // Use Python scripts for accurate PDF analysis
+      const { spawn } = require('child_process')
+      const path = require('path')
       
-      if (pages.length === 0) {
-        throw new Error('PDF has no pages')
+      // Call production specs detection script
+      const productionSpecsScript = path.join(process.cwd(), 'scripts', 'detect_production_specs.py')
+      const colorSpacesScript = path.join(process.cwd(), 'scripts', 'detect_color_spaces_v2.py')
+      
+      // Get production specs (dimensions, bleed, fonts, etc.)
+      const productionSpecs = await this.callPythonScript(productionSpecsScript, [filePath])
+      
+      // Get color space information
+      const colorSpaces = await this.callPythonScript(colorSpacesScript, [filePath])
+      
+      // Parse the results
+      let dimensions = { width: 0, height: 0 }
+      let resolution = 300
+      let hasBleed = false
+      let bleedMeasurements = { top: 0, right: 0, bottom: 0, left: 0 }
+      let fonts: string[] = []
+      let colorSpace = 'CMYK'
+      let spotColors: string[] = []
+      
+      if (productionSpecs.success) {
+        const specs = productionSpecs.data
+        dimensions = {
+          width: Math.round(specs.finished_size_mm[0]),
+          height: Math.round(specs.finished_size_mm[1])
+        }
+        resolution = specs.min_effective_ppi || 300
+        
+        // Check bleed
+        if (specs.bleed_mm) {
+          const bleed = specs.bleed_mm
+          hasBleed = bleed.left > 0 || bleed.right > 0 || bleed.top > 0 || bleed.bottom > 0
+          bleedMeasurements = {
+            top: Math.round(bleed.top * 10) / 10,
+            right: Math.round(bleed.right * 10) / 10,
+            bottom: Math.round(bleed.bottom * 10) / 10,
+            left: Math.round(bleed.left * 10) / 10
+          }
+        }
+        
+        // Extract fonts from notes if available
+        if (specs.notes && Array.isArray(specs.notes)) {
+          fonts = specs.notes.filter((note: string) => 
+            note.toLowerCase().includes('font') || 
+            note.toLowerCase().includes('typeface')
+          )
+        }
       }
       
-      const firstPage = pages[0]
-      const { width, height } = firstPage.getSize()
+      if (colorSpaces.success) {
+        const spaces = colorSpaces.data
+        if (spaces.detectedColorSpaces) {
+          // Determine primary color space
+          if (spaces.detectedColorSpaces.includes('CMYK')) {
+            colorSpace = 'CMYK'
+          } else if (spaces.detectedColorSpaces.includes('RGB')) {
+            colorSpace = 'RGB'
+          } else if (spaces.detectedColorSpaces.includes('GRAYSCALE')) {
+            colorSpace = 'GRAYSCALE'
+          }
+          
+          // Extract spot colors
+          if (spaces.detectedColorSpaces.includes('Spot') || spaces.detectedColorSpaces.includes('/spot')) {
+            spotColors.push('Spot Colors Detected')
+          }
+        }
+      }
       
-      // Convert points to mm (1 point = 0.3528 mm)
-      const widthMm = Math.round(width * 0.3528)
-      const heightMm = Math.round(height * 0.3528)
-      
-      // Check for text content to determine if text is outlined
-      const textOutlined = await this.checkPDFTextOutlined(pdfDoc)
-      
-      // Detect actual color profile from PDF content
-      const colorSpace = await this.detectPDFColorSpace(pdfDoc)
-      
-      // Detect spot colors from PDF content
-      const spotColors = await this.detectPDFSpotColors(pdfDoc)
-      
-      // Check for bleed and live area
-      const bleedInfo = await this.checkPDFBleed(pdfDoc)
-      const hasLiveArea = await this.checkPDFLiveArea(pdfDoc)
+      // Determine if text is outlined based on font detection
+      const textOutlined = fonts.length === 0
       
       return {
-        dimensions: { width: widthMm, height: heightMm },
-        resolution: 300, // PDFs are typically 300 DPI for print
+        dimensions,
+        resolution,
         colorSpace,
-        hasBleed: bleedInfo.hasBleed,
-        bleedMeasurements: bleedInfo.measurements,
-        hasLiveArea,
-        fonts: await this.extractPDFFonts(pdfDoc),
+        hasBleed,
+        bleedMeasurements,
+        hasLiveArea: dimensions.width > 50 && dimensions.height > 50,
+        fonts,
         spotColors,
         fileType: 'PDF',
         textOutlined
@@ -524,7 +570,7 @@ export class FileProcessor {
         console.log('Analyzing PDF internal structure for fonts...')
         
         // Extract fonts from Font Resources in page dictionaries
-        const pages = pdfDoc.getPages()
+      const pages = pdfDoc.getPages()
         for (const page of pages) {
           try {
             // Access page resources
@@ -1004,6 +1050,46 @@ export class FileProcessor {
     } catch (error) {
       console.warn('Error extracting PDF content:', error)
       return ''
+    }
+  }
+
+  private async callPythonScript(scriptPath: string, args: string[]): Promise<{ success: boolean; data?: any; error?: string }> {
+    try {
+      const { spawn } = require('child_process')
+      
+      return new Promise((resolve) => {
+        const pythonProcess = spawn('python3', [scriptPath, ...args])
+        
+        let stdout = ''
+        let stderr = ''
+        
+        pythonProcess.stdout.on('data', (data: Buffer) => {
+          stdout += data.toString()
+        })
+        
+        pythonProcess.stderr.on('data', (data: Buffer) => {
+          stderr += data.toString()
+        })
+        
+        pythonProcess.on('close', (code: number) => {
+          if (code === 0) {
+            try {
+              const result = JSON.parse(stdout.trim())
+              resolve({ success: true, data: result })
+            } catch (error) {
+              resolve({ success: false, error: 'Failed to parse Python script output' })
+            }
+          } else {
+            resolve({ success: false, error: `Python script failed with code ${code}: ${stderr}` })
+          }
+        })
+        
+        pythonProcess.on('error', (error: Error) => {
+          resolve({ success: false, error: `Failed to execute Python script: ${error.message}` })
+        })
+      })
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
     }
   }
 }

@@ -259,6 +259,16 @@ export const colorSpaceRule: ValidationRule = {
         passed: true,
         message: 'Color space: Grayscale (Print Ready)'
       }
+    } else if (colorSpace.includes('MIXED')) {
+      return {
+        passed: false,
+        message: 'Mixed color spaces detected. Convert all elements to CMYK for printing.',
+        details: {
+          recommendation: 'Convert all RGB elements to CMYK color space before printing',
+          currentSpace: 'Mixed (RGB + CMYK)',
+          requiredSpace: 'CMYK'
+        }
+      }
     }
     
     return {
