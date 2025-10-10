@@ -293,7 +293,7 @@ export class FileProcessor {
       const productionSpecs = await this.callPythonScript(productionSpecsScript, [filePath])
       
       // Get color space information
-      const colorSpaces = await this.callPythonScript(colorSpacesScript, [filePath])
+      const colorSpaces = await this.callPythonScript(colorSpacesScript, [filePath, '--json'])
       
       // Get font information
       const fontDetection = await this.callPythonScript(fontsScript, [filePath])
@@ -343,23 +343,29 @@ export class FileProcessor {
       
       if (colorSpaces.success) {
         const spaces = colorSpaces.data
-        if (spaces.detectedColorSpaces) {
-          // Determine primary color space based on what's detected
-          if (spaces.mixedSpaces) {
+        console.log('Color spaces detection result:', spaces)
+        
+        // Parse the color mode from the script output
+        if (spaces.color_mode) {
+          if (spaces.color_mode === 'Mixed') {
             colorSpace = 'Mixed (RGB + CMYK)'
-          } else if (spaces.detectedColorSpaces.includes('CMYK')) {
+          } else if (spaces.color_mode === 'CMYK') {
             colorSpace = 'CMYK'
-          } else if (spaces.detectedColorSpaces.includes('RGB')) {
+          } else if (spaces.color_mode === 'RGB') {
             colorSpace = 'RGB'
-          } else if (spaces.detectedColorSpaces.includes('GRAYSCALE')) {
+          } else if (spaces.color_mode === 'Grayscale') {
             colorSpace = 'GRAYSCALE'
-          }
-          
-          // Extract spot colors
-          if (spaces.detectedColorSpaces.includes('Spot') || spaces.detectedColorSpaces.includes('/spot')) {
-            spotColors.push('Spot Colors Detected')
+          } else {
+            colorSpace = spaces.color_mode
           }
         }
+        
+        // Extract spot colors from details
+        if (spaces.details && spaces.details.includes('Spot')) {
+          spotColors.push('Spot Colors Detected')
+        }
+      } else {
+        console.log('Color spaces detection failed:', colorSpaces.error)
       }
       
       // Determine if text is outlined based on font detection

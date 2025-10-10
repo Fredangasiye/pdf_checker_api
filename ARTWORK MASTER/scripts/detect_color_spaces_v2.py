@@ -332,39 +332,47 @@ def detect_eps_colorspace(file_path: str) -> Dict[str, Any]:
 
 def main():
     """Main function for command line usage."""
-    if len(sys.argv) != 2:
-        print("Usage: python detect_color_spaces_v2.py <file_path>")
+    if len(sys.argv) < 2:
+        print("Usage: python detect_color_spaces_v2.py <file_path> [--json]")
         sys.exit(1)
     
     file_path = sys.argv[1]
+    json_output = len(sys.argv) > 2 and sys.argv[2] == '--json'
     
     if not os.path.exists(file_path):
-        print(f"Error: File {file_path} not found")
+        if json_output:
+            print(json.dumps({"success": False, "error": f"File {file_path} not found"}))
+        else:
+            print(f"Error: File {file_path} not found")
         sys.exit(1)
     
-    print(f"Analyzing color space in: {file_path}")
-    print("-" * 60)
+    if not json_output:
+        print(f"Analyzing color space in: {file_path}")
+        print("-" * 60)
     
     # Analyze the file
     result = detect_colorspace(file_path)
     
     if not result["success"]:
-        print(f"❌ Analysis failed: {result.get('details', 'Unknown error')}")
+        if json_output:
+            print(json.dumps({"success": False, "error": result.get('details', 'Unknown error')}))
+        else:
+            print(f"❌ Analysis failed: {result.get('details', 'Unknown error')}")
         sys.exit(1)
     
-    # Display results
-    print(f"📁 File: {os.path.basename(result['file'])}")
-    print(f"🎨 Color Mode: {result['color_mode']}")
-    print(f"📋 Details: {result['details']}")
-    
-    if result['icc_profile']:
-        print(f"🔒 ICC Profile: {result['icc_profile']}")
-    
-    print(f"\n✅ Analysis complete!")
-    
-    # Return JSON for API usage
-    if "--json" in sys.argv:
-        print(json.dumps(result, indent=2))
+    if json_output:
+        # Return JSON for API usage
+        print(json.dumps(result))
+    else:
+        # Display results
+        print(f"📁 File: {os.path.basename(result['file'])}")
+        print(f"🎨 Color Mode: {result['color_mode']}")
+        print(f"📋 Details: {result['details']}")
+        
+        if result['icc_profile']:
+            print(f"🔒 ICC Profile: {result['icc_profile']}")
+        
+        print(f"\n✅ Analysis complete!")
 
 if __name__ == "__main__":
     main() 
