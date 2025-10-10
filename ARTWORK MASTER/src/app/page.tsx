@@ -43,7 +43,7 @@ interface DocumentItem {
   uploadedAt: Date
 }
 
-type ActiveTool = 'file-upload' | 'bleed-add' | 'bleed-remove' | 'color-change' | 'pullup-banner' | 'artwork-guidelines' | 'company-policies' | 'training-manuals' | 'media'
+type ActiveTool = 'file-upload' | 'bleed-add' | 'bleed-remove' | 'color-change' | 'pullup-banner' | 'media'
 
 // LocalStorage keys
 const STORAGE_KEYS = {
@@ -540,18 +540,6 @@ export default function Home() {
                 onMediaDelete={handleMediaDelete} 
                 isAdmin={isAdmin} 
               />
-        )
-      case 'artwork-guidelines':
-      case 'company-policies':
-      case 'training-manuals':
-        return (
-          <DocumentsGallery 
-            documents={uploadedDocuments} 
-            onDocumentUpload={handleDocumentUpload} 
-            onDocumentUploadMultiple={handleDocumentUploadMultiple}
-            onDocumentDelete={handleDocumentDelete} 
-            isAdmin={isAdmin} 
-          />
         )
       default:
         return null
