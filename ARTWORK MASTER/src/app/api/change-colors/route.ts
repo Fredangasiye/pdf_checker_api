@@ -102,6 +102,13 @@ export async function POST(request: NextRequest) {
     const oldColors = formData.getAll('oldColor') as string[]
     const newColors = formData.getAll('newColor') as string[]
     const tolerance = parseFloat(formData.get('tolerance') as string || '30.0')
+    
+    console.log('Form data received:', {
+      oldColors,
+      newColors,
+      tolerance,
+      fileName: file?.name
+    })
 
     if (!file || !oldColors.length || !newColors.length) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })

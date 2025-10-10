@@ -43,6 +43,11 @@ interface DocumentItem {
   uploadedAt: Date
 }
 
+interface ColorPair {
+  oldColor: string
+  newColor: string
+}
+
 type ActiveTool = 'file-upload' | 'bleed-add' | 'bleed-remove' | 'color-change' | 'pullup-banner' | 'media' | 'documents'
 
 // LocalStorage keys
@@ -284,23 +289,41 @@ export default function Home() {
     }
   }
 
-  const handleColorChange = async (file: File, colorSettings: any) => {
+  const handleColorChange = async (file: File, colorPairs: ColorPair[], tolerance: number) => {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('colorSettings', JSON.stringify(colorSettings))
+      
+      // Add each color pair
+      colorPairs.forEach(pair => {
+        formData.append('oldColor', pair.oldColor)
+        formData.append('newColor', pair.newColor)
+      })
+      
+      formData.append('tolerance', tolerance.toString())
 
-      const response = await fetch('/api/convert-outlines', {
+      const response = await fetch('/api/change-colors', {
         method: 'POST',
         body: formData
       })
 
       if (!response.ok) {
-        throw new Error('Failed to change colors')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to change colors')
       }
 
-      const result = await response.json()
-      return result
+      // Handle PDF file download
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `color_changed_${file.name}`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+      
+      return { success: true }
     } catch (error) {
       console.error('Color change error:', error)
       throw error
