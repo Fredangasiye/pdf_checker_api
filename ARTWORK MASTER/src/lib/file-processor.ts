@@ -287,12 +287,16 @@ export class FileProcessor {
       // Call production specs detection script
       const productionSpecsScript = path.join(process.cwd(), 'scripts', 'detect_production_specs.py')
       const colorSpacesScript = path.join(process.cwd(), 'scripts', 'detect_color_spaces_v2.py')
+      const fontsScript = path.join(process.cwd(), 'scripts', 'detect_fonts.py')
       
-      // Get production specs (dimensions, bleed, fonts, etc.)
+      // Get production specs (dimensions, bleed, etc.)
       const productionSpecs = await this.callPythonScript(productionSpecsScript, [filePath])
       
       // Get color space information
       const colorSpaces = await this.callPythonScript(colorSpacesScript, [filePath])
+      
+      // Get font information
+      const fontDetection = await this.callPythonScript(fontsScript, [filePath])
       
       // Parse the results
       let dimensions = { width: 0, height: 0 }
@@ -332,11 +336,18 @@ export class FileProcessor {
         }
       }
       
+      // Get fonts from dedicated font detection script
+      if (fontDetection.success && fontDetection.data.fonts) {
+        fonts = fontDetection.data.fonts
+      }
+      
       if (colorSpaces.success) {
         const spaces = colorSpaces.data
         if (spaces.detectedColorSpaces) {
-          // Determine primary color space
-          if (spaces.detectedColorSpaces.includes('CMYK')) {
+          // Determine primary color space based on what's detected
+          if (spaces.mixedSpaces) {
+            colorSpace = 'Mixed (RGB + CMYK)'
+          } else if (spaces.detectedColorSpaces.includes('CMYK')) {
             colorSpace = 'CMYK'
           } else if (spaces.detectedColorSpaces.includes('RGB')) {
             colorSpace = 'RGB'
