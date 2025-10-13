@@ -183,6 +183,7 @@ def detect_pdf_fonts_comprehensive(file_path):
                 "Pages": meta.get("pages", []),
             })
 
+        total_pages = doc.page_count
         doc.close()
         
         return {
@@ -191,7 +192,7 @@ def detect_pdf_fonts_comprehensive(file_path):
             "font_count": len(font_list),
             "has_embedded_fonts": any(f.get("Embedded", False) for f in font_list),
             "has_subset_fonts": any(f.get("Subset", False) for f in font_list),
-            "total_pages": doc.page_count
+            "total_pages": total_pages
         }
         
     except Exception as e:
