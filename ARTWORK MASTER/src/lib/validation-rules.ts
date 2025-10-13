@@ -22,6 +22,17 @@ export interface ArtworkMetadata {
   bleedMeasurements?: { top: number; right: number; bottom: number; left: number }
   hasLiveArea?: boolean
   fonts?: string[]
+  fontDetails?: Array<{
+    PostScript: string
+    FullName: string
+    Family: string
+    Subfamily: string
+    Embedded: boolean
+    Subset: boolean
+    CIDKeyed: boolean
+    Encoding: string
+    Pages: number[]
+  }>
   spotColors?: string[]
   fileType?: string
   scale?: number
@@ -279,10 +290,95 @@ export const colorSpaceRule: ValidationRule = {
 }
 
 export const fontRule: ValidationRule = {
-  name: 'Text Outlining',
-  description: 'Check if text is converted to outlines',
+  name: 'Font Analysis',
+  description: 'Analyze fonts and text outlining status',
   severity: 'warning',
   validate: (metadata: ArtworkMetadata) => {
+    // Check if we have detailed font information
+    if (metadata.fontDetails && metadata.fontDetails.length > 0) {
+      const fontDetails = metadata.fontDetails
+      const embeddedFonts = fontDetails.filter(f => f.Embedded)
+      const subsetFonts = fontDetails.filter(f => f.Subset)
+      const liveFonts = fontDetails.filter(f => !f.Embedded)
+      
+      // Build detailed font information
+      const fontInfo = fontDetails.map(font => ({
+        name: font.FullName || font.Family || font.PostScript,
+        postscript: font.PostScript,
+        family: font.Family,
+        subfamily: font.Subfamily,
+        embedded: font.Embedded,
+        subset: font.Subset,
+        pages: font.Pages,
+        encoding: font.Encoding
+      }))
+      
+      if (metadata.textOutlined === true) {
+        return {
+          passed: true,
+          message: 'All text is converted to outlines (Print Ready)',
+          details: {
+            fontCount: fontDetails.length,
+            fontDetails: fontInfo,
+            summary: {
+              totalFonts: fontDetails.length,
+              embeddedFonts: embeddedFonts.length,
+              subsetFonts: subsetFonts.length,
+              liveFonts: liveFonts.length
+            }
+          }
+        }
+      }
+      
+      if (metadata.textOutlined === false || liveFonts.length > 0) {
+        return {
+          passed: false,
+          message: `Text is not converted to outlines - ${liveFonts.length} live font(s) detected`,
+          details: {
+            fontCount: fontDetails.length,
+            fontDetails: fontInfo,
+            liveFonts: liveFonts.map(f => f.FullName || f.Family || f.PostScript),
+            embeddedFonts: embeddedFonts.map(f => f.FullName || f.Family || f.PostScript),
+            subsetFonts: subsetFonts.map(f => f.FullName || f.Family || f.PostScript),
+            recommendation: 'Convert all text to outlines to avoid font substitution issues',
+            examples: {
+              'Adobe Illustrator': 'Select text → Type → Create Outlines',
+              'Adobe InDesign': 'Select text → Type → Create Outlines',
+              'Adobe Photoshop': 'Text layers should be rasterized'
+            },
+            summary: {
+              totalFonts: fontDetails.length,
+              embeddedFonts: embeddedFonts.length,
+              subsetFonts: subsetFonts.length,
+              liveFonts: liveFonts.length
+            }
+          }
+        }
+      }
+      
+      // If we have font details but can't determine outlining status
+      return {
+        passed: false,
+        message: `Fonts detected - ${fontDetails.length} font(s) found`,
+        details: {
+          fontCount: fontDetails.length,
+          fontDetails: fontInfo,
+          recommendation: 'Convert text to outlines to avoid font substitution issues',
+          examples: {
+            'Adobe Illustrator': 'Select text → Type → Create Outlines',
+            'Adobe InDesign': 'Select text → Type → Create Outlines'
+          },
+          summary: {
+            totalFonts: fontDetails.length,
+            embeddedFonts: embeddedFonts.length,
+            subsetFonts: subsetFonts.length,
+            liveFonts: liveFonts.length
+          }
+        }
+      }
+    }
+    
+    // Fallback to simple font detection
     if (metadata.textOutlined === true) {
       return {
         passed: true,
