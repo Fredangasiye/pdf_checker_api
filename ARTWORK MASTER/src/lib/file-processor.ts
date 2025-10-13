@@ -28,6 +28,17 @@ export interface ProcessingResult {
     bleedMeasurements?: { top: number; right: number; bottom: number; left: number }
     hasLiveArea?: boolean
     fonts?: string[]
+    fontDetails?: Array<{
+      PostScript: string
+      FullName: string
+      Family: string
+      Subfamily: string
+      Embedded: boolean
+      Subset: boolean
+      CIDKeyed: boolean
+      Encoding: string
+      Pages: number[]
+    }>
     spotColors?: string[]
     fileType?: string
     textOutlined?: boolean
@@ -295,8 +306,9 @@ export class FileProcessor {
       // Get color space information
       const colorSpaces = await this.callPythonScript(colorSpacesScript, [filePath, '--json'])
       
-      // Get font information
-      const fontDetection = await this.callPythonScript(fontsScript, [filePath])
+      // Get comprehensive font information
+      const comprehensiveFontsScript = path.join(process.cwd(), 'scripts', 'detect_fonts_comprehensive.py')
+      const fontDetection = await this.callPythonScript(comprehensiveFontsScript, [filePath])
       
       // Parse the results
       let dimensions = { width: 0, height: 0 }
@@ -336,9 +348,28 @@ export class FileProcessor {
         }
       }
       
-      // Get fonts from dedicated font detection script
+      // Get fonts from comprehensive font detection script
       if (fontDetection.success && fontDetection.data.fonts) {
-        fonts = fontDetection.data.fonts
+        // Extract font names from comprehensive detection
+        fonts = fontDetection.data.fonts.map((font: any) => {
+          // Prefer FullName, then Family, then PostScript name
+          if (font.FullName && font.FullName.trim()) {
+            return font.FullName.trim()
+          } else if (font.Family && font.Family.trim()) {
+            return font.Family.trim()
+          } else if (font.PostScript && font.PostScript.trim()) {
+            return font.PostScript.trim()
+          }
+          return ''
+        }).filter((name: string) => name.length > 0)
+        
+        // Add additional font metadata for debugging
+        console.log('Comprehensive font detection result:', {
+          totalFonts: fontDetection.data.font_count,
+          hasEmbeddedFonts: fontDetection.data.has_embedded_fonts,
+          hasSubsetFonts: fontDetection.data.has_subset_fonts,
+          fontDetails: fontDetection.data.fonts
+        })
       }
       
       if (colorSpaces.success) {
@@ -379,6 +410,7 @@ export class FileProcessor {
         bleedMeasurements,
         hasLiveArea: dimensions.width > 50 && dimensions.height > 50,
         fonts,
+        fontDetails: fontDetection.success ? fontDetection.data.fonts : [],
         spotColors,
         fileType: 'PDF',
         textOutlined
