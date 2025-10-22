@@ -1105,9 +1105,15 @@ export class FileProcessor {
   private async callPythonScript(scriptPath: string, args: string[]): Promise<{ success: boolean; data?: any; error?: string }> {
     try {
       const { spawn } = require('child_process')
+      const fs = require('fs')
+      const path = require('path')
+      
+      // Prefer the project virtualenv Python if available
+      const venvPython = path.join(process.cwd(), 'scripts', 'venv', 'bin', 'python3')
+      const pythonCmd = fs.existsSync(venvPython) ? venvPython : 'python3'
       
       return new Promise((resolve) => {
-        const pythonProcess = spawn('python3', [scriptPath, ...args])
+        const pythonProcess = spawn(pythonCmd, [scriptPath, ...args])
         
         let stdout = ''
         let stderr = ''
