@@ -58,3 +58,10 @@ uploads/
 outputs/
 *.tar.gz
 *.zip
+ARTWORK/
+dist/
+tmp/
+uploads/
+outputs/
+*.tar.gz
+*.zip
