@@ -356,7 +356,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
                 <div className="mt-2 text-xs text-gray-400 space-y-1">
                   <div>Size: {formatFileSize(item.size)}</div>
                   <div>Type: {item.type.split('/')[1]?.toUpperCase() || item.type}</div>
-                  <div>Uploaded: {(item.uploadDate || item.uploadedAt || new Date()).toLocaleDateString()}</div>
+                  <div>Uploaded: {(item.uploadDate || new Date()).toLocaleDateString()}</div>
                 </div>
 
                 {/* Actions */}

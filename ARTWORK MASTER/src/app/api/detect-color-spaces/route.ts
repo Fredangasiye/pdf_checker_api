@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         })
       }
       
-      return new Promise((resolve, reject) => {
+      return new Promise<Response>((resolve, reject) => {
         console.log('Starting Python color space detection process with:', { pythonPath, pythonScript, tempFilePath })
         
         const pythonProcess = spawn(pythonPath, [pythonScript, tempFilePath])

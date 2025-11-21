@@ -323,7 +323,7 @@ export default function Home() {
       document.body.removeChild(a)
       window.URL.revokeObjectURL(url)
       
-      return { success: true }
+      return
     } catch (error) {
       console.error('Color change error:', error)
       throw error

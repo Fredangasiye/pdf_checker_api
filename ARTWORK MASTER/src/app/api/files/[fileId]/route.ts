@@ -5,10 +5,10 @@ import fs from 'fs/promises'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { fileId: string } }
+  { params }: { params: Promise<{ fileId: string }> }
 ) {
   try {
-    const { fileId } = params
+    const { fileId } = await params
 
     if (!fileId) {
       return NextResponse.json(
@@ -44,7 +44,7 @@ export async function GET(
     const contentType = fileInfo.mimeType || 'application/octet-stream'
 
     // Return file with appropriate headers
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(new Uint8Array(fileBuffer), {
       status: 200,
       headers: {
         'Content-Type': contentType,

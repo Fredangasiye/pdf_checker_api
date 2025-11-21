@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const pythonScript = path.join(process.cwd(), 'scripts', 'detect_production_specs.py')
     const pythonPath = path.join(process.cwd(), 'scripts', 'venv', 'bin', 'python3')
 
-    return await new Promise((resolve) => {
+    return await new Promise<Response>((resolve) => {
       const proc = spawn(pythonPath, [pythonScript, tempFilePath])
       let out = ''
       let err = ''
