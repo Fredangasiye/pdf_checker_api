@@ -45,7 +45,7 @@ export default function BEITHAChatbot({ isOpen, onClose }: BEITHAChatbotProps) {
 
     try {
       const response = await beithaChatbot.sendMessage([...messages, userMessage])
-      
+
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -81,10 +81,10 @@ export default function BEITHAChatbot({ isOpen, onClose }: BEITHAChatbotProps) {
       <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-2xl">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-            <span className="text-blue-600 font-bold text-lg">B</span>
+            <span className="text-blue-600 font-bold text-lg">v</span>
           </div>
           <div>
-            <h3 className="text-white font-bold text-lg">BEITHA</h3>
+            <h3 className="text-white font-bold text-lg">vAIb</h3>
             <p className="text-blue-100 text-xs">AI Assistant</p>
           </div>
         </div>
@@ -103,9 +103,9 @@ export default function BEITHAChatbot({ isOpen, onClose }: BEITHAChatbotProps) {
         {messages.length === 0 && (
           <div className="text-center text-gray-500 py-8">
             <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-blue-600 text-2xl">B</span>
+              <span className="text-blue-600 text-2xl">v</span>
             </div>
-            <h4 className="font-semibold mb-2">Welcome to BEITHA!</h4>
+            <h4 className="font-semibold mb-2">Welcome to vAIb!</h4>
             <p className="text-sm">I'm here to help with artwork analysis, file processing, and print production questions.</p>
           </div>
         )}
@@ -116,16 +116,14 @@ export default function BEITHAChatbot({ isOpen, onClose }: BEITHAChatbotProps) {
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                message.role === 'user'
+              className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-800'
-              }`}
+                }`}
             >
               <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-              <p className={`text-xs mt-1 ${
-                message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
-              }`}>
+              <p className={`text-xs mt-1 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
@@ -164,7 +162,7 @@ export default function BEITHAChatbot({ isOpen, onClose }: BEITHAChatbotProps) {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask BEITHA anything..."
+            placeholder="Ask vAIb anything..."
             disabled={isLoading}
             className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
           />

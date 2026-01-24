@@ -81,7 +81,7 @@ export default function HelpArticles({ selectedRule, onClose }: HelpArticlesProp
   const [selectedArticle, setSelectedArticle] = useState<string | null>(selectedRule ? 'resolution-fix' : null)
   const [searchTerm, setSearchTerm] = useState('')
 
-  const filteredArticles = helpArticles.filter(article => 
+  const filteredArticles = helpArticles.filter(article =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     article.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (selectedRule && article.relatedRules?.includes(selectedRule))
@@ -115,20 +115,19 @@ export default function HelpArticles({ selectedRule, onClose }: HelpArticlesProp
               placeholder="Search help articles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-beith-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-beith-blue-500"
+              className="w-full px-3 py-2 border border-vaib-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-vaib-blue-500"
             />
           </div>
-          
+
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {filteredArticles.map(article => (
               <button
                 key={article.id}
                 onClick={() => setSelectedArticle(article.id)}
-                className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                  selectedArticle === article.id
-                    ? 'border-beith-blue-500 bg-beith-blue-50 text-beith-blue-700'
-                    : 'border-beith-gray-200 hover:border-beith-gray-300 hover:bg-beith-gray-50'
-                }`}
+                className={`w-full text-left p-3 rounded-lg border transition-colors ${selectedArticle === article.id
+                    ? 'border-vaib-blue-500 bg-vaib-blue-50 text-vaib-blue-700'
+                    : 'border-vaib-gray-200 hover:border-vaib-gray-300 hover:bg-vaib-gray-50'
+                  }`}
               >
                 <div className="font-medium">{article.title}</div>
                 <div className="text-sm text-black">{article.category}</div>
@@ -144,19 +143,19 @@ export default function HelpArticles({ selectedRule, onClose }: HelpArticlesProp
               <h3 className="text-xl font-semibold text-black mb-2">
                 {currentArticle.title}
               </h3>
-                              <div className="text-sm text-black mb-4">
+              <div className="text-sm text-black mb-4">
                 Category: {currentArticle.category}
               </div>
-              
-                              <p className="text-black mb-6">{currentArticle.content}</p>
-              
+
+              <p className="text-black mb-6">{currentArticle.content}</p>
+
               {currentArticle.steps && (
                 <div>
                   <h4 className="font-semibold text-black mb-3">Step-by-Step Instructions:</h4>
                   <ol className="space-y-3">
                     {currentArticle.steps.map((step, index) => (
                       <li key={index} className="flex items-start space-x-3">
-                        <span className="flex-shrink-0 w-6 h-6 bg-beith-blue-100 text-beith-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
+                        <span className="flex-shrink-0 w-6 h-6 bg-vaib-blue-100 text-vaib-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
                           {index + 1}
                         </span>
                         <span className="text-black">{step}</span>
@@ -165,9 +164,9 @@ export default function HelpArticles({ selectedRule, onClose }: HelpArticlesProp
                   </ol>
                 </div>
               )}
-              
+
               {currentArticle.relatedRules && (
-                <div className="mt-6 pt-4 border-t border-beith-gray-200">
+                <div className="mt-6 pt-4 border-t border-vaib-gray-200">
                   <h4 className="font-semibold text-black mb-2">Related Validation Rules:</h4>
                   <div className="flex flex-wrap gap-2">
                     {currentArticle.relatedRules.map(rule => (

@@ -10,8 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Beith Digital brand colors
-        'beith-blue': {
+        // vAIb brand colors
+        'vaib-blue': {
           50: '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
@@ -23,7 +23,7 @@ const config: Config = {
           800: '#1e40af',
           900: '#1e3a8a',
         },
-        'beith-red': {
+        'vaib-red': {
           50: '#fef2f2',
           100: '#fee2e2',
           200: '#fecaca',
@@ -35,7 +35,7 @@ const config: Config = {
           800: '#991b1b',
           900: '#7f1d1d',
         },
-        'beith-gray': {
+        'vaib-gray': {
           50: '#f9fafb',
           100: '#f3f4f6',
           200: '#e5e7eb',
@@ -49,7 +49,7 @@ const config: Config = {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Futura', 'Trebuchet MS', 'Arial', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

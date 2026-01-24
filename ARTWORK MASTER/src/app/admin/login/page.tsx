@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <h1 className="text-3xl font-bold text-gray-900">Beith Digital</h1>
+          <h1 className="text-3xl font-bold text-gray-900">vAIb Preflight</h1>
         </div>
         <h2 className="mt-6 text-center text-2xl font-bold text-gray-900">
           Admin Login
@@ -127,7 +127,7 @@ export default function AdminLoginPage() {
               <div className="bg-gray-50 p-3 rounded-md">
                 <p className="text-xs text-gray-600 mb-1">Admin User:</p>
                 <p className="text-xs text-gray-900">Username: admin</p>
-                <p className="text-xs text-gray-900">Password: beith2024</p>
+                <p className="text-xs text-gray-900">Password: vaib2024</p>
               </div>
               <div className="bg-gray-50 p-3 rounded-md">
                 <p className="text-xs text-gray-600 mb-1">DTP Manager:</p>

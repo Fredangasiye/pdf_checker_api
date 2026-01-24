@@ -2,7 +2,7 @@
 export const env = {
   // Application Configuration
   NODE_ENV: process.env.NODE_ENV || 'development',
-  APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'Beith Digital Preflight Portal',
+  APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'vAIb Preflight Portal',
   APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
 
   // File Upload Configuration
@@ -18,7 +18,7 @@ export const env = {
   // Vector Database Configuration (Post-MVP)
   PINECONE_API_KEY: process.env.PINECONE_API_KEY,
   PINECONE_ENVIRONMENT: process.env.PINECONE_ENVIRONMENT,
-  PINECONE_INDEX_NAME: process.env.PINECONE_INDEX_NAME || 'beith-knowledge-base',
+  PINECONE_INDEX_NAME: process.env.PINECONE_INDEX_NAME || 'vaib-knowledge-base',
 
   // Database Configuration (Future)
   DATABASE_URL: process.env.DATABASE_URL,
@@ -34,7 +34,7 @@ export const env = {
   SMTP_PASS: process.env.SMTP_PASS,
 
   // Contact Information
-  CONTACT_EMAIL: process.env.CONTACT_EMAIL || 'gideon@beith.co.za',
+  CONTACT_EMAIL: process.env.CONTACT_EMAIL || 'contact@vaib.ai',
   CONTACT_PHONE: process.env.CONTACT_PHONE || '011 555 5700',
 } as const
 
@@ -83,8 +83,8 @@ export const AI_CONFIG = {
   TEMPERATURE: 0.8,
 } as const
 
-// Chatbot system prompt for BEITHA
-export const BEITHA_SYSTEM_PROMPT = `You are BEITHA, an AI assistant for the Beith Digital Preflight Portal. You are friendly, helpful, and knowledgeable about both casual conversation and professional print production.
+// Chatbot system prompt for vAIb
+export const BEITHA_SYSTEM_PROMPT = `You are vAIb, an AI assistant for the vAIb Preflight Portal. You are friendly, helpful, and knowledgeable about both casual conversation and professional print production.
 
 **Your Primary Expertise:**
 1. **Artwork Analysis**: Explain preflight results, font issues, color space problems, spot color detection

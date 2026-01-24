@@ -1,4 +1,4 @@
-# Beith Digital Preflight Portal
+# vAIb Preflight Portal
 
 A client-facing web platform for automated artwork validation against Beith Digital's print specifications. This portal helps reduce incorrectly submitted artwork files by providing instant feedback and clear correction guidance.
 
@@ -28,7 +28,7 @@ A client-facing web platform for automated artwork validation against Beith Digi
 - **Testing**: Jest, React Testing Library
 - **AI Integration**: OpenRouter.ai (Mistral 7B)
 - **Vector Database**: Pinecone (for RAG system)
-- **Styling**: Custom Beith Digital brand colors and Inter font
+- **Styling**: Custom vAIb brand colors and Futura font
 
 ## 📋 Prerequisites
 
@@ -41,7 +41,7 @@ A client-facing web platform for automated artwork validation against Beith Digi
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd beith-preflight-portal
+   cd vaib-preflight-portal
    ```
 
 2. **Install dependencies**
@@ -103,7 +103,7 @@ Create a `.env.local` file with the following variables:
 
 ```env
 # Application Configuration
-NEXT_PUBLIC_APP_NAME="Beith Digital Preflight Portal"
+NEXT_PUBLIC_APP_NAME="vAIb Preflight Portal"
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 # File Upload Configuration
@@ -119,10 +119,10 @@ MISTRAL_MODEL=mistralai/mistral-7b-instruct
 # Vector Database Configuration (Post-MVP)
 PINECONE_API_KEY=your_pinecone_api_key_here
 PINECONE_ENVIRONMENT=your_pinecone_environment_here
-PINECONE_INDEX_NAME=beith-knowledge-base
+PINECONE_INDEX_NAME=vaib-knowledge-base
 
 # Contact Information
-CONTACT_EMAIL=gideon@beith.co.za
+CONTACT_EMAIL=contact@vaib.ai
 CONTACT_PHONE=011 555 5700
 ```
 
@@ -143,14 +143,14 @@ npm run test:coverage
 
 ## 🎨 Design System
 
-The application uses Beith Digital's brand colors:
-- **Primary Blue**: `#2563eb` (beith-blue-600)
-- **Accent Red**: `#dc2626` (beith-red-600)
+The application uses vAIb's brand colors:
+- **Primary Blue**: `#2563eb` (vaib-blue-600)
+- **Accent Red**: `#dc2626` (vaib-red-600)
 - **Neutral Grays**: Various shades for text and backgrounds
 
 ## 📊 Validation Rules
 
-The preflight engine validates artwork against Beith Digital's specifications:
+The preflight engine validates artwork against vAIb's specifications:
 
 - **Dimensions**: Height x Width format in millimeters
 - **Resolution**: True DPI based on scale and final size
@@ -171,12 +171,12 @@ The preflight engine validates artwork against Beith Digital's specifications:
 ## 📞 Support
 
 For technical support or questions about artwork specifications:
-- **Email**: gideon@beith.co.za
+- **Email**: contact@vaib.ai
 - **Phone**: 011 555 5700
 
 ## 📄 License
 
-This project is proprietary to Beith Digital. All rights reserved.
+This project is proprietary to vAIb. All rights reserved.
 
 ## 🗺️ Roadmap
 

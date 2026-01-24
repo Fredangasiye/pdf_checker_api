@@ -20,7 +20,7 @@ class AuthService {
   private static instance: AuthService
   private currentSession: AuthSession | null = null
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): AuthService {
     if (!AuthService.instance) {
@@ -32,7 +32,7 @@ class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthSession> {
     // In a real implementation, this would validate against a database
     // For now, we'll use a simple hardcoded admin user
-    if (credentials.username === 'admin' && credentials.password === 'beith2024') {
+    if (credentials.username === 'admin' && credentials.password === 'vaib2024') {
       const user: AdminUser = {
         id: '1',
         username: 'admin',
