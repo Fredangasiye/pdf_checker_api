@@ -510,16 +510,16 @@ export default function Home() {
                 {/* Animated 3D BEITH Logo */}
                 <div className="relative">
                   <div className="flex justify-center items-center space-x-1 perspective-1000">
-                    <span className="text-8xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:text-blue-400 cursor-pointer animate-pulse"
+                    <span className="text-8xl font-bold text-purple-600 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_15px_rgba(124,58,237,0.4)] hover:text-purple-500 cursor-pointer animate-pulse"
                       style={{
                         fontFamily: 'Futura, sans-serif',
-                        textShadow: '0 2px 4px rgba(59,130,246,0.2), 0 4px 8px rgba(59,130,246,0.1)',
+                        textShadow: '0 2px 4px rgba(124,58,237,0.2), 0 4px 8px rgba(124,58,237,0.1)',
                         transformStyle: 'preserve-3d'
                       }}>v</span>
-                    <span className="text-8xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:text-blue-400 cursor-pointer animate-pulse"
+                    <span className="text-8xl font-bold text-purple-600 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_15px_rgba(124,58,237,0.4)] hover:text-purple-500 cursor-pointer animate-pulse"
                       style={{
                         fontFamily: 'Futura, sans-serif',
-                        textShadow: '0 2px 4px rgba(59,130,246,0.2), 0 4px 8px rgba(59,130,246,0.1)',
+                        textShadow: '0 2px 4px rgba(124,58,237,0.2), 0 4px 8px rgba(124,58,237,0.1)',
                         transformStyle: 'preserve-3d'
                       }}>A</span>
                     <span className="text-8xl font-bold text-red-600 tracking-widest transform-gpu transition-all duration-300 hover:scale-90 hover:rotate-y-20 hover:rotate-x-10 hover:drop-shadow-[0_0_20px_rgba(239,68,68,0.5)] hover:text-red-500 cursor-pointer animate-pulse hover:animate-bounce"
@@ -528,10 +528,10 @@ export default function Home() {
                         textShadow: '0 3px 6px rgba(239,68,68,0.3), 0 6px 12px rgba(239,68,68,0.2)',
                         transformStyle: 'preserve-3d'
                       }}>I</span>
-                    <span className="text-8xl font-bold text-blue-500 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:text-blue-400 cursor-pointer animate-pulse"
+                    <span className="text-8xl font-bold text-purple-600 tracking-widest transform-gpu transition-all duration-500 hover:scale-110 hover:rotate-y-12 hover:drop-shadow-[0_0_15px_rgba(124,58,237,0.4)] hover:text-purple-500 cursor-pointer animate-pulse"
                       style={{
                         fontFamily: 'Futura, sans-serif',
-                        textShadow: '0 2px 4px rgba(59,130,246,0.2), 0 4px 8px rgba(59,130,246,0.1)',
+                        textShadow: '0 2px 4px rgba(124,58,237,0.2), 0 4px 8px rgba(124,58,237,0.1)',
                         transformStyle: 'preserve-3d'
                       }}>b</span>
                   </div>
@@ -587,8 +587,8 @@ export default function Home() {
           ) : undefined}
           fileUploader={
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-8 w-8 rounded-full bg-vaib-blue-100 mb-3">
-                <svg className="h-4 w-4 text-vaib-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="mx-auto flex items-center justify-center h-8 w-8 rounded-full bg-vaib-purple-100 mb-3">
+                <svg className="h-4 w-4 text-vaib-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
               </div>
@@ -621,7 +621,7 @@ export default function Home() {
           {/* Header - Only show on artwork section */}
           {activeTool === 'file-upload' && (
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-blue-600 mb-2 tracking-wide">
+              <h1 className="text-2xl font-bold text-purple-600 mb-2 tracking-wide">
                 Welcome to vAIb Preflight Portal
               </h1>
               <p className="text-sm text-gray-600 max-w-lg mx-auto leading-relaxed">
@@ -655,33 +655,33 @@ export default function Home() {
             {activeTool === 'file-upload' && (
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-50 p-4 rounded-lg">
-                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-vaib-blue-100 mb-3 group-hover:bg-vaib-blue-200 transition-colors duration-300">
-                    <svg className="h-5 w-5 text-vaib-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-vaib-purple-100 mb-3 group-hover:bg-vaib-purple-200 transition-colors duration-300">
+                    <svg className="h-5 w-5 text-vaib-purple-600 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-800 group-hover:text-vaib-blue-600 transition-colors duration-300">Instant Validation</h3>
+                  <h3 className="text-lg font-medium text-gray-800 group-hover:text-vaib-purple-600 transition-colors duration-300">Instant Validation</h3>
                   <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Get immediate feedback on your artwork specifications</p>
                 </div>
 
                 <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-50 p-4 rounded-lg">
-                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-vaib-blue-100 mb-3 group-hover:bg-vaib-blue-200 transition-colors duration-300">
-                    <svg className="h-5 w-5 text-vaib-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-vaib-purple-100 mb-3 group-hover:bg-vaib-purple-200 transition-colors duration-300">
+                    <svg className="h-5 w-5 text-vaib-purple-600 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-800 group-hover:text-vaib-blue-600 transition-colors duration-300">Detailed Analysis</h3>
+                  <h3 className="text-lg font-medium text-gray-800 group-hover:text-vaib-purple-600 transition-colors duration-300">Detailed Analysis</h3>
                   <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Get comprehensive analysis of your artwork specifications</p>
                 </div>
 
                 <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-50 p-4 rounded-lg">
-                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-vaib-blue-100 mb-3 group-hover:bg-vaib-blue-200 transition-colors duration-300">
-                    <svg className="h-5 w-5 text-vaib-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-vaib-purple-100 mb-3 group-hover:bg-vaib-purple-200 transition-colors duration-300">
+                    <svg className="h-5 w-5 text-vaib-purple-600 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-800 group-hover:text-vaib-blue-600 transition-colors duration-300">Smart Guidance</h3>
+                  <h3 className="text-lg font-medium text-gray-800 group-hover:text-vaib-purple-600 transition-colors duration-300">Smart Guidance</h3>
                   <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Get step-by-step instructions to fix any issues</p>
                 </div>
               </div>

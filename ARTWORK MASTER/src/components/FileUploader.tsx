@@ -33,7 +33,7 @@ export default function FileUploader({
     isUploading: false,
     progress: 0
   })
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const validateFile = useCallback((file: File): string | null => {
@@ -59,7 +59,7 @@ export default function FileUploader({
     }
 
     setUploadState(prev => ({ ...prev, isUploading: true, progress: 0 }))
-    
+
     // Simulate upload progress
     const interval = setInterval(() => {
       setUploadState(prev => {
@@ -94,7 +94,7 @@ export default function FileUploader({
 
     if (validFiles.length > 0) {
       setUploadState(prev => ({ ...prev, isUploading: true, progress: 0 }))
-      
+
       // Simulate upload progress
       const interval = setInterval(() => {
         setUploadState(prev => {
@@ -128,7 +128,7 @@ export default function FileUploader({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     setUploadState(prev => ({ ...prev, isDragOver: false }))
-    
+
     if (disabled) return
 
     const files = Array.from(e.dataTransfer.files)
@@ -160,9 +160,9 @@ export default function FileUploader({
 
   const getDragOverStyles = () => {
     if (uploadState.isDragOver) {
-      return 'border-blue-400 bg-blue-900/20'
+      return 'border-purple-400 bg-purple-900/20'
     }
-    return 'border-gray-600 hover:border-blue-400'
+    return 'border-gray-600 hover:border-purple-400'
   }
 
   const getUploadProgressStyles = () => {
@@ -217,8 +217,8 @@ export default function FileUploader({
               <div>
                 <p className="text-sm font-medium text-gray-900">Uploading...</p>
                 <div className="mt-2 w-full bg-gray-700 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  <div
+                    className="bg-purple-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${uploadState.progress}%` }}
                   ></div>
                 </div>
@@ -227,14 +227,14 @@ export default function FileUploader({
             </div>
           ) : (
             <>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-900/30 mb-4">
-                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-purple-900/30 mb-4">
+                <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
               </div>
               <p className="text-sm text-gray-800 mb-2">
-                <span className="font-medium text-blue-600">Click to upload</span> or drag and drop
-                {multiple && <span className="text-blue-600"> multiple files</span>}
+                <span className="font-medium text-purple-600">Click to upload</span> or drag and drop
+                {multiple && <span className="text-purple-600"> multiple files</span>}
               </p>
               <p className="text-xs text-gray-600">
                 {acceptedTypes.join(', ').toUpperCase()} files up to {(maxSize / 1024 / 1024).toFixed(0)}MB
@@ -246,7 +246,7 @@ export default function FileUploader({
 
       {uploadState.isDragOver && (
         <div className="mt-2 text-center">
-          <p className="text-sm text-blue-600 font-medium">
+          <p className="text-sm text-purple-600 font-medium">
             Drop your file here to upload
           </p>
         </div>

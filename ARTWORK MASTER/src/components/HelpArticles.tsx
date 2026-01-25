@@ -115,7 +115,7 @@ export default function HelpArticles({ selectedRule, onClose }: HelpArticlesProp
               placeholder="Search help articles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-vaib-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-vaib-blue-500"
+              className="w-full px-3 py-2 border border-vaib-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-vaib-purple-500"
             />
           </div>
 
@@ -125,8 +125,8 @@ export default function HelpArticles({ selectedRule, onClose }: HelpArticlesProp
                 key={article.id}
                 onClick={() => setSelectedArticle(article.id)}
                 className={`w-full text-left p-3 rounded-lg border transition-colors ${selectedArticle === article.id
-                    ? 'border-vaib-blue-500 bg-vaib-blue-50 text-vaib-blue-700'
-                    : 'border-vaib-gray-200 hover:border-vaib-gray-300 hover:bg-vaib-gray-50'
+                  ? 'border-vaib-purple-500 bg-vaib-purple-50 text-vaib-purple-700'
+                  : 'border-vaib-gray-200 hover:border-vaib-gray-300 hover:bg-vaib-gray-50'
                   }`}
               >
                 <div className="font-medium">{article.title}</div>
@@ -155,7 +155,7 @@ export default function HelpArticles({ selectedRule, onClose }: HelpArticlesProp
                   <ol className="space-y-3">
                     {currentArticle.steps.map((step, index) => (
                       <li key={index} className="flex items-start space-x-3">
-                        <span className="flex-shrink-0 w-6 h-6 bg-vaib-blue-100 text-vaib-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
+                        <span className="flex-shrink-0 w-6 h-6 bg-vaib-purple-100 text-vaib-purple-600 rounded-full flex items-center justify-center text-sm font-medium">
                           {index + 1}
                         </span>
                         <span className="text-black">{step}</span>
