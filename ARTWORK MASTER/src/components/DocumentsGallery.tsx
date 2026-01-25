@@ -35,7 +35,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
   // Filter documents based on search and filter
   const filteredDocuments = documents.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.category.toLowerCase().includes(searchTerm.toLowerCase())
+      item.category.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesFilter = filter === 'all' || item.category === filter
     return matchesSearch && matchesFilter
   })
@@ -44,12 +44,12 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
     const files = e.target.files
     if (files && files.length > 0) {
       const fileArray = Array.from(files)
-      
+
       // Add files to uploading state
       fileArray.forEach(file => {
         const fileId = `uploading_${Date.now()}_${Math.random()}`
         setUploadingFiles(prev => new Map(prev.set(fileId, { progress: 0, file })))
-        
+
         // Simulate upload progress
         const progressInterval = setInterval(() => {
           setUploadingFiles(prev => {
@@ -61,7 +61,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
             return prev
           })
         }, 200)
-        
+
         // Complete upload after progress reaches 100
         setTimeout(() => {
           clearInterval(progressInterval)
@@ -72,7 +72,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
           })
         }, 2000 + Math.random() * 1000) // 2-3 seconds total
       })
-      
+
       if (files.length === 1) {
         onDocumentUpload(files[0], uploadCategory)
       } else if (onDocumentUploadMultiple) {
@@ -177,10 +177,10 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
             </div>
           </div>
           <div className="w-full bg-blue-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ 
-                width: `${Array.from(uploadingFiles.values()).reduce((acc, { progress }) => acc + progress, 0) / uploadingFiles.size}%` 
+              style={{
+                width: `${Array.from(uploadingFiles.values()).reduce((acc, { progress }) => acc + progress, 0) / uploadingFiles.size}%`
               }}
             ></div>
           </div>
@@ -191,15 +191,13 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <button
           onClick={() => setFilter(filter === 'Artwork Guidelines' ? 'all' : 'Artwork Guidelines')}
-          className={`bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-200 text-left ${
-            filter === 'Artwork Guidelines' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-          }`}
+          className={`bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-200 text-left ${filter === 'Artwork Guidelines' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+            }`}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="text-3xl">📋</div>
-            <span className={`text-xs px-2 py-1 rounded-full ${
-              filter === 'Artwork Guidelines' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
-            }`}>
+            <span className={`text-xs px-2 py-1 rounded-full ${filter === 'Artwork Guidelines' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+              }`}>
               {documents.filter(item => item.category === 'Artwork Guidelines').length} items
             </span>
           </div>
@@ -209,15 +207,13 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
 
         <button
           onClick={() => setFilter(filter === 'Company Policies' ? 'all' : 'Company Policies')}
-          className={`bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-200 text-left ${
-            filter === 'Company Policies' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-          }`}
+          className={`bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-200 text-left ${filter === 'Company Policies' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+            }`}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="text-3xl">🏢</div>
-            <span className={`text-xs px-2 py-1 rounded-full ${
-              filter === 'Company Policies' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
-            }`}>
+            <span className={`text-xs px-2 py-1 rounded-full ${filter === 'Company Policies' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+              }`}>
               {documents.filter(item => item.category === 'Company Policies').length} items
             </span>
           </div>
@@ -227,15 +223,13 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
 
         <button
           onClick={() => setFilter(filter === 'Training Manuals' ? 'all' : 'Training Manuals')}
-          className={`bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-200 text-left ${
-            filter === 'Training Manuals' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-          }`}
+          className={`bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-200 text-left ${filter === 'Training Manuals' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+            }`}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="text-3xl">📚</div>
-            <span className={`text-xs px-2 py-1 rounded-full ${
-              filter === 'Training Manuals' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
-            }`}>
+            <span className={`text-xs px-2 py-1 rounded-full ${filter === 'Training Manuals' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+              }`}>
               {documents.filter(item => item.category === 'Training Manuals').length} items
             </span>
           </div>
@@ -259,15 +253,13 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
           {Array.from(uploadingFiles.entries()).map(([fileId, { progress, file }]) => (
             <div
               key={fileId}
-              className={`bg-blue-50 rounded-lg border-2 border-blue-200 overflow-hidden ${
-                viewMode === 'list' ? 'flex items-center p-4' : ''
-              }`}
+              className={`bg-blue-50 rounded-lg border-2 border-blue-200 overflow-hidden ${viewMode === 'list' ? 'flex items-center p-4' : ''
+                }`}
             >
               {/* Uploading Thumbnail */}
               <div className={viewMode === 'list' ? 'flex-shrink-0 mr-4' : ''}>
-                <div className={`bg-blue-100 border-2 border-blue-300 flex flex-col items-center justify-center ${
-                  viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
-                }`}>
+                <div className={`bg-blue-100 border-2 border-blue-300 flex flex-col items-center justify-center ${viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
+                  }`}>
                   <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mb-2"></div>
                   <span className="text-sm text-blue-700 font-bold text-center">
                     Uploading...
@@ -292,7 +284,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
                 {/* Progress Bar */}
                 <div className="mt-3">
                   <div className="w-full bg-blue-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${progress}%` }}
                     ></div>
@@ -307,16 +299,14 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
           {filteredDocuments.map((item) => (
             <div
               key={item.id}
-              className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow ${
-                viewMode === 'list' ? 'flex items-center p-4' : ''
-              }`}
+              className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow ${viewMode === 'list' ? 'flex items-center p-4' : ''
+                }`}
             >
               {/* Thumbnail */}
               <div className={viewMode === 'list' ? 'flex-shrink-0 mr-4' : ''}>
                 {item.type.includes('pdf') || item.type === 'application/pdf' ? (
-                  <div className={`bg-red-50 border-2 border-red-200 flex flex-col items-center justify-center cursor-pointer hover:bg-red-100 transition-colors ${
-                    viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
-                  }`} onClick={() => setSelectedDocument(item)}>
+                  <div className={`bg-red-50 border-2 border-red-200 flex flex-col items-center justify-center cursor-pointer hover:bg-red-100 transition-colors ${viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
+                    }`} onClick={() => setSelectedDocument(item)}>
                     <svg className="w-8 h-8 text-red-600 mb-2" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
                     </svg>
@@ -325,9 +315,8 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
                     </span>
                   </div>
                 ) : (
-                  <div className={`bg-gray-100 flex items-center justify-center ${
-                    viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
-                  }`}>
+                  <div className={`bg-gray-100 flex items-center justify-center ${viewMode === 'list' ? 'w-16 h-16 rounded' : 'w-full h-48'
+                    }`}>
                     <span className="text-2xl text-blue-600">{getFileIcon(item.type)}</span>
                   </div>
                 )}
@@ -340,7 +329,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
                     <h4 className="font-medium text-gray-900 truncate">{item.name}</h4>
                     <p className="text-sm text-gray-500 mt-1">{item.category}</p>
                   </div>
-                  
+
                   {/* Admin Actions */}
                   {isAdmin && (
                     <button
@@ -387,7 +376,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
           <div className="bg-white rounded-lg max-w-md w-full mx-4">
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-4">Upload Documents</h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
@@ -440,7 +429,7 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
                 ×
               </button>
             </div>
-            
+
             <div className="p-6">
               {selectedDocument.type.includes('pdf') || selectedDocument.type === 'application/pdf' ? (
                 <div className="text-center py-12">
@@ -484,11 +473,11 @@ export default function DocumentsGallery({ documents, onDocumentUpload, onDocume
                   </a>
                 </div>
               )}
-              
+
               <div className="mt-6 pt-6 border-t border-gray-200 text-sm text-gray-500 space-y-1">
                 <p>Size: {formatFileSize(selectedDocument.size)}</p>
                 <p>Type: {selectedDocument.type}</p>
-                <p>Uploaded: {(selectedDocument.uploadDate || selectedDocument.uploadedAt || new Date()).toLocaleDateString()}</p>
+                <p>Uploaded: {(selectedDocument.uploadDate || new Date()).toLocaleDateString()}</p>
               </div>
             </div>
           </div>

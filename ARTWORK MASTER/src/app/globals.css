@@ -1,13 +1,13 @@
 /* Minimal Professional Design */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* Futuristic header typography */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .tech-title {
   font-family: 'Orbitron', 'Inter', sans-serif;
